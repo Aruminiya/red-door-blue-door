@@ -37,7 +37,7 @@ export const createInitialGameState = (
 });
 
 const createGameReducer =
-  (maxHeart: number) =>
+  (initialHeart: number, maxHeart: number) =>
   (state: GameState, action: GameAction): GameState => {
     switch (action.type) {
       case "ASSIGN_ROUND":
@@ -57,6 +57,8 @@ const createGameReducer =
             Math.max(0, state.heart + action.payload.hpDelta)
           ),
         };
+      case "RESET":
+        return createInitialGameState(initialHeart, maxHeart);
       default:
         return state;
     }
@@ -72,10 +74,9 @@ export function useGameState({
   onFinish,
 }: UseGameStateOptions) {
   const [gameState, dispatch] = useReducer(
-    createGameReducer(maxHeart),
+    createGameReducer(initialHeart, maxHeart),
     createInitialGameState(initialHeart, maxHeart)
   );
-
   const { heart, playerChoice, round } = gameState;
 
   const { currentRound, currentChoice, currentRedDoor, currentBlueDoor } =
@@ -141,6 +142,13 @@ export function useGameState({
     [currentRound, playerChoice.length, round.length]
   );
 
+  const initGame = useCallback(() => {
+    if (typeof window !== "undefined" && persistKey) {
+      sessionStorage.removeItem(persistKey);
+    }
+    dispatch({ type: "RESET" });
+  }, [persistKey]);
+
   return {
     gameState,
     heart,
@@ -156,5 +164,6 @@ export function useGameState({
     assignRound,
     chooseDoor,
     finishGame,
+    initGame,
   };
 }

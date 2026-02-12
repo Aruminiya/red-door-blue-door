@@ -1,28 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Box } from "@mui/material";
 import DoorSelector from "./components/DoorSelector";
 import GameInfoPanel from "./components/GameInfoPanel";
 import IntroScreen from "./components/IntroScreen";
 import StoryDialog from "./components/StoryDialog";
-import { useGameState } from "./hooks/useGameState";
-import { useRoomData } from "./hooks/useRoomData";
+import { useGame } from "./contexts/GameContext";
 import { useStoryGenerator } from "./hooks/useStoryGenerator";
 import { useToggle } from "./hooks/useToggle";
 
-const MAX_ROUNDS = 10;
-const PERSIST_KEY = "rdbd:result";
-
 export default function Home() {
-  const router = useRouter();
-  const { shelters, asuras } = useRoomData();
-
   // Intro state
   const [showIntro, setShowIntro] = useState(true);
 
-  // Game state
+  // Game state from context
   const {
     heart,
     playerChoice,
@@ -36,13 +28,7 @@ export default function Home() {
     assignRound,
     chooseDoor,
     finishGame,
-  } = useGameState({
-    shelters,
-    asuras,
-    maxRounds: MAX_ROUNDS,
-    persistKey: PERSIST_KEY,
-    onFinish: () => router.push("/results"),
-  });
+  } = useGame();
 
   const { open: isStoryDialogOpen, toggleOpen: openStoryDialog, toggleClose: closeStoryDialog } = useToggle();
   const { loading, error, output, clearOutput } = useStoryGenerator({
@@ -104,7 +90,7 @@ export default function Home() {
       <GameInfoPanel
         heart={heart}
         currentRound={round.length}
-        maxRounds={MAX_ROUNDS}
+        maxRounds={maxRounds}
       />
       {/* Story Dialog */}
       <StoryDialog

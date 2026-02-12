@@ -23,4 +23,5 @@ export type GameState = {
 
 export type GameAction =
   | { type: "ASSIGN_ROUND"; payload: Round }
-  | { type: "PLAYER_CHOICE"; payload: { choice: "red" | "blue"; hpDelta: number } };
+  | { type: "PLAYER_CHOICE"; payload: { choice: "red" | "blue"; hpDelta: number } }
+  | { type: "RESET" };

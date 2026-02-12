@@ -1,6 +1,8 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
+import { GameProvider } from "./contexts/GameContext";
 
 const theme = createTheme({
   palette: {
@@ -25,10 +27,14 @@ export default function Providers({
 }: {
   children: React.ReactNode;
 }) {
+  const router = useRouter();
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      {children}
+      <GameProvider onFinish={() => router.push("/results")}>
+        {children}
+      </GameProvider>
     </ThemeProvider>
   );
 }

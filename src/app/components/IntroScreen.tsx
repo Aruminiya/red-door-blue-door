@@ -18,6 +18,8 @@ export default function IntroScreen({ onStart }: IntroScreenProps) {
   const [introComplete, setIntroComplete] = useState(false);
   const introTextRef = useRef<HTMLSpanElement>(null);
   const introContainerRef = useRef<HTMLDivElement>(null);
+  const introButtonRef = useRef<HTMLButtonElement>(null);
+  const introContentRef = useRef<HTMLDivElement>(null);
 
   // Intro animation effect
   useEffect(() => {
@@ -29,7 +31,7 @@ export default function IntroScreen({ onStart }: IntroScreenProps) {
     tl.fromTo(
       introContainerRef.current,
       { opacity: 0 },
-      { opacity: 1, duration: 1.5, ease: "power2.out" }
+      { opacity: 1, duration: 0.3, ease: "power2.out" }
     );
 
     // Typewriter effect
@@ -45,8 +47,51 @@ export default function IntroScreen({ onStart }: IntroScreenProps) {
       },
     });
 
+    tl.fromTo(
+      introButtonRef.current,
+      { opacity: 0 },
+      { opacity: 1, duration: 1, ease: "power2.out" },
+      "-=0.5"
+    );
+
     return () => {
       tl.kill();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!introContainerRef.current || !introContentRef.current) return;
+
+    const container = introContainerRef.current;
+    const content = introContentRef.current;
+    const computed = window.getComputedStyle(container);
+    const paddingY =
+      parseFloat(computed.paddingTop || "0") +
+      parseFloat(computed.paddingBottom || "0");
+
+    const syncHeight = () => {
+      const contentHeight = content.getBoundingClientRect().height;
+      gsap.to(container, {
+        height: contentHeight + paddingY,
+        duration: 0.35,
+        opacity: 1,
+        ease: "power2.out",
+        overwrite: true,
+      });
+    };
+
+    gsap.set(container, {
+      height: content.getBoundingClientRect().height + paddingY,
+    });
+
+    const observer = new ResizeObserver(() => {
+      syncHeight();
+    });
+
+    observer.observe(content);
+
+    return () => {
+      observer.disconnect();
     };
   }, []);
 
@@ -87,35 +132,37 @@ export default function IntroScreen({ onStart }: IntroScreenProps) {
           opacity: 0,
         }}
       >
-        <Typography
-          component="p"
-          sx={{
-            color: "white",
-            fontSize: { xs: "1.25rem", md: "1.5rem" },
-            lineHeight: 2,
-            letterSpacing: "0.1em",
-            minHeight: { xs: "200px", md: "180px" },
-          }}
-        >
-          <Box component="span" ref={introTextRef} />
-        </Typography>
-        {introComplete && (
-          <Button
-            variant="outlined"
-            onClick={handleStartGame}
+        <Box ref={introContentRef}>
+          <Typography
+            component="p"
             sx={{
-              mt: 4,
               color: "white",
-              borderColor: "rgba(255, 255, 255, 0.5)",
-              "&:hover": {
-                borderColor: "white",
-                backgroundColor: "rgba(255, 255, 255, 0.1)",
-              },
+              fontSize: { xs: "1.25rem", md: "1.5rem" },
+              lineHeight: 2,
+              letterSpacing: "0.1em",
             }}
           >
-            進入試煉
-          </Button>
-        )}
+            <Box component="span" ref={introTextRef} />
+          </Typography>
+          {introComplete && (
+            <Button
+              variant="outlined"
+              onClick={handleStartGame}
+              ref={introButtonRef}
+              sx={{
+                mt: 4,
+                color: "white",
+                borderColor: "rgba(255, 255, 255, 0.5)",
+                "&:hover": {
+                  borderColor: "white",
+                  backgroundColor: "rgba(255, 255, 255, 0.1)",
+                },
+              }}
+            >
+              進入試煉
+            </Button>
+          )}
+        </Box>
       </Box>
     </Box>
   );

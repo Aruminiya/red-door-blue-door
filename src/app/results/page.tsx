@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -10,27 +9,15 @@ import {
   Typography,
 } from "@mui/material";
 import { useRouter } from "next/navigation";
-import type { GameState } from "@/app/types";
+import { useGame } from "@/app/contexts/GameContext";
 import DoorData from "@/app/components/DoorData";
-
-const STORAGE_KEY = "rdbd:result";
 
 export default function ResultsPage() {
   const router = useRouter();
-  const [result, setResult] = useState<GameState | null>(null);
+  const { heart, playerChoice, round, initGame } = useGame();
 
-  useEffect(() => {
-    const raw = sessionStorage.getItem(STORAGE_KEY);
-    if (!raw) return;
-    try {
-      setResult(JSON.parse(raw) as GameState);
-    } catch {
-      setResult(null);
-    }
-  }, []);
-
-  const totalRounds = result?.round.length ?? 0;
-  const cleared = result ? result.heart > 0 && totalRounds > 0 : false;
+  const totalRounds = round.length;
+  const cleared = heart > 0 && totalRounds > 0;
 
   return (
     <Box
@@ -49,27 +36,27 @@ export default function ResultsPage() {
           </Typography>
 
           <Paper elevation={4} sx={{ p: 3 }}>
-            {result ? (
+            {totalRounds > 0 ? (
               <Stack spacing={1.5}>
                 <Typography variant="body1">
                   結果：{cleared ? "通關" : "死亡"}
                 </Typography>
                 <Typography variant="body1">
-                  最終血量：{result.heart}
+                  最終血量：{heart}
                 </Typography>
                 <Typography variant="body1">
                   總回合數：{totalRounds}
                 </Typography>
                 <Typography variant="body1">
-                  選門紀錄：{result.playerChoice.map(choice => choice === "red" ? "🔴" : "🔵").join(" / ") || "無"}
+                  選門紀錄：{playerChoice.map(choice => choice === "red" ? "🔴" : "🔵").join(" / ") || "無"}
                 </Typography>
                 <Stack spacing={2} sx={{ pt: 1 }}>
-                  {result.round.map((round, index) => {
-                    const choice = result.playerChoice[index];
+                  {round.map((r, index) => {
+                    const choice = playerChoice[index];
                     if (!choice) return null;
-                    const chosenDoor = choice === "red" ? round.redDoor : round.blueDoor;
+                    const chosenDoor = choice === "red" ? r.redDoor : r.blueDoor;
                     return (
-                      <Stack key={`${index + 1}-${round.redDoor.id}-${round.blueDoor.id}`} spacing={1}>
+                      <Stack key={`${index + 1}-${r.redDoor.id}-${r.blueDoor.id}`} spacing={1}>
                         <Typography variant="subtitle1">
                           第 {index + 1} 回合：{choice === "red" ? "🔴 紅門" : "🔵 藍門"}
                         </Typography>
@@ -83,8 +70,14 @@ export default function ResultsPage() {
               <Typography variant="body1">沒有找到成績資料。</Typography>
             )}
           </Paper>
-          <Button variant="contained" onClick={() => router.push("/")}> 
-            回首頁
+          <Button
+            variant="contained"
+            onClick={() => {
+              initGame();
+              router.push("/");
+            }}
+          >
+            再來一局
           </Button>
         </Stack>
       </Container>
