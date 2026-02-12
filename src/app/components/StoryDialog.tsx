@@ -8,7 +8,6 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  IconButton,
   LinearProgress,
   Stack,
   Typography,
@@ -18,7 +17,7 @@ import DoorData from "./DoorData";
 
 type StoryDialogProps = {
   open: boolean;
-  onClose: () => void;
+  onCloseAction: () => void;
   currentChoice: "red" | "blue" | undefined;
   currentRedDoor: Door | undefined;
   currentBlueDoor: Door | undefined;
@@ -26,13 +25,13 @@ type StoryDialogProps = {
   error: string | null;
   output: string;
   isGameOver: boolean;
-  onNextRound: () => void;
-  onFinishGame: () => void;
+  onNextRoundAction: () => void;
+  onFinishGameAction: () => void;
 };
 
 export default function StoryDialog({
   open,
-  onClose,
+  onCloseAction,
   currentChoice,
   currentRedDoor,
   currentBlueDoor,
@@ -40,70 +39,107 @@ export default function StoryDialog({
   error,
   output,
   isGameOver,
-  onNextRound,
-  onFinishGame,
+  onNextRoundAction,
+  onFinishGameAction,
 }: StoryDialogProps) {
+  const currentDoor = currentChoice === "red" ? currentRedDoor : currentBlueDoor;
+  const isShelter = currentDoor ? currentDoor.type === "Shelter" : true;
+  const tone = isShelter ? "light" : "dark";
+  const palette = isShelter
+    ? {
+        background: "rgba(255, 255, 255, 0.98)",
+        surface: "#ffffff",
+        text: "#14171f",
+        muted: "rgba(20, 23, 31, 0.6)",
+        border: "rgba(20, 23, 31, 0.12)",
+        outputBg: "#f6f7fb",
+        progressTrack: "rgba(20, 23, 31, 0.12)",
+        progressBar: "#2b74ff",
+      }
+    : {
+        background: "rgba(16, 22, 31, 0.98)",
+        surface: "#0f141c",
+        text: "#f5f7fb",
+        muted: "rgba(245, 247, 251, 0.65)",
+        border: "rgba(245, 247, 251, 0.18)",
+        outputBg: "#0f1622",
+        progressTrack: "rgba(245, 247, 251, 0.15)",
+        progressBar: "#6ea2ff",
+      };
+
   const handleAction = () => {
     if (isGameOver) {
-      onFinishGame();
+      onFinishGameAction();
     } else {
-      onNextRound();
-      onClose();
+      onNextRoundAction();
+      onCloseAction();
     }
   };
 
   return (
     <Dialog
       open={open}
-      onClose={onClose}
+      onClose={onCloseAction}
       maxWidth="sm"
       fullWidth
       slotProps={{
         paper: {
           sx: {
-            backgroundColor: "rgba(255, 255, 255, 0.95)",
+            backgroundColor: palette.background,
             backdropFilter: "blur(8px)",
-            borderRadius: 3,
+            borderRadius: 1,
+            border: `1px solid ${palette.border}`,
+            color: palette.text,
           },
         },
       }}
     >
       <DialogTitle sx={{ pr: 6 }}>
-        <Typography variant="h6" component="span" sx={{ fontWeight: 600 }}>
-          {currentChoice === "red" ? "紅色門扉" : "藍色門扉"}
-        </Typography>
-        <IconButton
-          aria-label="close"
-          onClick={onClose}
-          sx={{
-            position: "absolute",
-            right: 8,
-            top: 8,
-            color: "grey.500",
+        <Typography
+          variant="h6"
+          component="span"
+          sx={{ 
+            fontWeight: 600,
+            color: palette.text,
+            display: "flex",
+            justifyContent: "center",
           }}
         >
-          ✕
-        </IconButton>
+          {currentChoice === "red" ? "你選了 紅色門扉" : "你選了 藍色門扉"}
+        </Typography>
       </DialogTitle>
 
-      <DialogContent dividers>
+      <DialogContent dividers sx={{ borderColor: palette.border }}>
         <Stack spacing={2}>
           {/* Door Result */}
           {currentRedDoor && currentBlueDoor && (
             <Stack spacing={1.5}>
-              <DoorData doorData={currentRedDoor} doorColor="red" />
-              <DoorData doorData={currentBlueDoor} doorColor="blue" />
+              {currentChoice === "red" ? (
+                 <DoorData doorData={currentRedDoor} doorColor="red" tone={tone} isShowDoorColor={false} />
+              ) : (
+                <DoorData doorData={currentBlueDoor} doorColor="blue" tone={tone} isShowDoorColor={false} />
+              )}
             </Stack>
           )}
 
           {/* Loading */}
           {loading && (
             <Box sx={{ py: 2 }}>
-              <LinearProgress />
+              <LinearProgress
+                sx={{
+                  backgroundColor: palette.progressTrack,
+                  "& .MuiLinearProgress-bar": {
+                    backgroundColor: palette.progressBar,
+                  },
+                }}
+              />
               <Typography
                 variant="body2"
-                color="text.secondary"
-                sx={{ mt: 1, textAlign: "center" }}
+                sx={{
+                  mt: 1,
+                  textAlign: "center",
+                  color: palette.muted,
+                }}
               >
                 正在生成故事...
               </Typography>
@@ -120,7 +156,8 @@ export default function StoryDialog({
                 whiteSpace: "pre-wrap",
                 wordBreak: "break-word",
                 fontFamily: "var(--font-geist-mono)",
-                backgroundColor: "#f6f7fb",
+                backgroundColor: palette.outputBg,
+                color: palette.text,
                 p: 2,
                 borderRadius: 2,
                 fontSize: "0.9rem",

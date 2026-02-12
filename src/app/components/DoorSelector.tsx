@@ -5,10 +5,10 @@ import { useImageMapDoors, DEFAULT_DOOR_COORDS } from "@/app/hooks/useImageMapDo
 
 type DoorSelectorProps = {
   showDoorSelection: boolean;
-  onSelect: (choice: "red" | "blue") => void;
+  onSelectAction: (choice: "red" | "blue") => void;
 };
 
-export default function DoorSelector({ showDoorSelection, onSelect }: DoorSelectorProps) {
+export default function DoorSelector({ showDoorSelection, onSelectAction }: DoorSelectorProps) {
   const { imageRef, mapCoords, debugBoxes, updateCoords } = useImageMapDoors({
     doorCoords: DEFAULT_DOOR_COORDS,
     enabled: true,
@@ -58,7 +58,7 @@ export default function DoorSelector({ showDoorSelection, onSelect }: DoorSelect
         <>
           {/* Red Door */}
           <Box
-            onClick={() => onSelect("red")}
+            onClick={() => onSelectAction("red")}
             sx={{
               position: "absolute",
               left: debugBoxes.red.left,
@@ -78,7 +78,7 @@ export default function DoorSelector({ showDoorSelection, onSelect }: DoorSelect
           />
           {/* Blue Door */}
           <Box
-            onClick={() => onSelect("blue")}
+            onClick={() => onSelectAction("blue")}
             sx={{
               position: "absolute",
               left: debugBoxes.blue.left,

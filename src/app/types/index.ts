@@ -1,6 +1,7 @@
 export type Door = { 
   id: number, 
   type: "Shelter" | "Asura", 
+  imageUrl: string | null,
   theme: string,
   name: string, 
   door_visual: string, 

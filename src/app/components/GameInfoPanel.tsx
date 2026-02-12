@@ -21,13 +21,13 @@ export default function GameInfoPanel({
         position: "absolute",
         top: 20,
         left: 20,
-        backgroundColor: "rgba(0, 0, 0, 0.6)",
+        backgroundColor: "rgba(255, 255, 255, 0.6)",
         backdropFilter: "blur(8px)",
         WebkitBackdropFilter: "blur(8px)",
-        borderRadius: 2,
+        borderRadius: 1,
         px: 3,
         py: 2,
-        color: "white",
+        color: "black",
       }}
     >
       <Typography

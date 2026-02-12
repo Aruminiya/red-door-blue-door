@@ -11,10 +11,10 @@ const INTRO_TEXT =
   "歡迎來到這場純白迴廊的試煉。我是你的引路人，將見證你在機率與命運之間的抉擇。現在，你站在無止境的白色空間中央，四周寂靜得只能聽見自己的心跳。前方，兩扇門扉靜靜地佇立，等待著你的推開。";
 
 type IntroScreenProps = {
-  onStart: () => void;
+  onStartAction: () => void;
 };
 
-export default function IntroScreen({ onStart }: IntroScreenProps) {
+export default function IntroScreen({ onStartAction }: IntroScreenProps) {
   const [introComplete, setIntroComplete] = useState(false);
   const introTextRef = useRef<HTMLSpanElement>(null);
   const introContainerRef = useRef<HTMLDivElement>(null);
@@ -100,7 +100,7 @@ export default function IntroScreen({ onStart }: IntroScreenProps) {
       opacity: 0,
       duration: 0.8,
       ease: "power2.in",
-      onComplete: onStart,
+      onComplete: onStartAction,
     });
   };
 

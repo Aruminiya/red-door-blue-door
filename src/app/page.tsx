@@ -69,7 +69,7 @@ export default function Home() {
 
   // Intro screen
   if (showIntro) {
-    return <IntroScreen onStart={handleIntroComplete} />;
+    return <IntroScreen onStartAction={handleIntroComplete} />;
   }
 
   const showDoorSelection = round.length > 0 && playerChoice.length !== round.length;
@@ -84,7 +84,7 @@ export default function Home() {
       {/* Background Image & Door Selector */}
       <DoorSelector
         showDoorSelection={showDoorSelection}
-        onSelect={handlePlayerChoice}
+        onSelectAction={handlePlayerChoice}
       />
       {/* Game Info Panel */}
       <GameInfoPanel
@@ -95,7 +95,7 @@ export default function Home() {
       {/* Story Dialog */}
       <StoryDialog
         open={isStoryDialogOpen}
-        onClose={closeStoryDialog}
+        onCloseAction={closeStoryDialog}
         currentChoice={currentChoice}
         currentRedDoor={currentRedDoor}
         currentBlueDoor={currentBlueDoor}
@@ -103,8 +103,8 @@ export default function Home() {
         error={error}
         output={output}
         isGameOver={isGameOver}
-        onNextRound={handleNextRound}
-        onFinishGame={finishGame}
+        onNextRoundAction={handleNextRound}
+        onFinishGameAction={finishGame}
       />
     </Box>
   );
