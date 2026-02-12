@@ -397,6 +397,7 @@ export default function Home() {
               top: debugBoxes.blue.top,
               width: debugBoxes.blue.width,
               height: debugBoxes.blue.height,
+
               cursor: "pointer",
               zIndex: 10,
               display: "flex",
@@ -418,9 +419,10 @@ export default function Home() {
           zIndex: 1,
           py: { xs: 3, md: 5 },
           pointerEvents: "none",
+
         }}
       >
-        <Container maxWidth="md" sx={{ pointerEvents: "auto" }}>
+        <Container maxWidth="md" sx={{ pointerEvents: "auto", height: "100%", overflowY: "scroll" }}>
           <Stack spacing={3}>
             {/* Game Info Panel */}
             <Box
