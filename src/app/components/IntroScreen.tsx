@@ -3,12 +3,13 @@
 import { useEffect, useRef, useState } from "react";
 import { Box, Button, Typography } from "@mui/material";
 import gsap from "gsap";
-import { TextPlugin } from "gsap/TextPlugin";
 
-gsap.registerPlugin(TextPlugin);
-
-const INTRO_TEXT =
-  "歡迎來到這場純白迴廊的試煉。我是你的引路人，將見證你在機率與命運之間的抉擇。現在，你站在無止境的白色空間中央，四周寂靜得只能聽見自己的心跳。前方，兩扇門扉靜靜地佇立，等待著你的推開。";
+const INTRO_LINES = [
+  "歡迎來到這場純白迴廊的試煉。我是你的引路人",
+  "現在，你站在無止境的白色空間中央",
+  "四周寂靜得只能聽見自己的心跳",
+  "兩扇門扉靜靜地佇立，等待著你的推開",
+];
 
 type IntroScreenProps = {
   onStartAction: () => void;
@@ -16,14 +17,14 @@ type IntroScreenProps = {
 
 export default function IntroScreen({ onStartAction }: IntroScreenProps) {
   const [introComplete, setIntroComplete] = useState(false);
-  const introTextRef = useRef<HTMLSpanElement>(null);
   const introContainerRef = useRef<HTMLDivElement>(null);
   const introButtonRef = useRef<HTMLButtonElement>(null);
   const introContentRef = useRef<HTMLDivElement>(null);
+  const linesRef = useRef<(HTMLParagraphElement | null)[]>([]);
 
   // Intro animation effect
   useEffect(() => {
-    if (!introTextRef.current || !introContainerRef.current) return;
+    if (!introContainerRef.current) return;
 
     const tl = gsap.timeline();
 
@@ -34,24 +35,24 @@ export default function IntroScreen({ onStartAction }: IntroScreenProps) {
       { opacity: 1, duration: 0.3, ease: "power2.out" }
     );
 
-    // Typewriter effect
-    tl.to(introTextRef.current, {
-      duration: 6,
-      text: {
-        value: INTRO_TEXT,
-        delimiter: "",
-      },
-      ease: "none",
-      onComplete: () => {
-        setIntroComplete(true);
-      },
+    // Fade in each line with stagger
+    linesRef.current.forEach((line, index) => {
+      if (!line) return;
+      tl.fromTo(
+        line,
+        { opacity: 0, y: 10 },
+        { opacity: 1, y: 0, duration: 3, ease: "power2.out" },
+        index === 0 ? "+=0.3" : "-=0.3"
+      );
     });
 
+    // Show button after last line
+    tl.add(() => setIntroComplete(true));
     tl.fromTo(
       introButtonRef.current,
       { opacity: 0 },
       { opacity: 1, duration: 1, ease: "power2.out" },
-      "-=0.5"
+      "-=0.3"
     );
 
     return () => {
@@ -133,17 +134,23 @@ export default function IntroScreen({ onStartAction }: IntroScreenProps) {
         }}
       >
         <Box ref={introContentRef}>
-          <Typography
-            component="p"
-            sx={{
-              color: "white",
-              fontSize: { xs: "1.25rem", md: "1.5rem" },
-              lineHeight: 2,
-              letterSpacing: "0.1em",
-            }}
-          >
-            <Box component="span" ref={introTextRef} />
-          </Typography>
+          {INTRO_LINES.map((line, index) => (
+            <Typography
+              key={index}
+              ref={(el) => { linesRef.current[index] = el; }}
+              component="p"
+              sx={{
+                color: "white",
+                fontSize: { xs: "1.25rem", md: "1.5rem" },
+                lineHeight: 2,
+                letterSpacing: "0.1em",
+                opacity: 0,
+                mb: index < INTRO_LINES.length - 1 ? 2 : 0,
+              }}
+            >
+              {line}
+            </Typography>
+          ))}
           {introComplete && (
             <Button
               variant="outlined"
