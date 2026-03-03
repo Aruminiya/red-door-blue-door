@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Typography, Stack } from "@mui/material";
+import { useRouter } from "next/navigation";
 import gsap from "gsap";
 
 const INTRO_LINES = [
@@ -16,9 +17,10 @@ type IntroScreenProps = {
 };
 
 export default function IntroScreen({ onStartAction }: IntroScreenProps) {
+  const router = useRouter();
   const [introComplete, setIntroComplete] = useState(false);
   const introContainerRef = useRef<HTMLDivElement>(null);
-  const introButtonRef = useRef<HTMLButtonElement>(null);
+  const introButtonRef = useRef<HTMLDivElement>(null);
   const introContentRef = useRef<HTMLDivElement>(null);
   const linesRef = useRef<(HTMLParagraphElement | null)[]>([]);
 
@@ -152,22 +154,44 @@ export default function IntroScreen({ onStartAction }: IntroScreenProps) {
             </Typography>
           ))}
           {introComplete && (
-            <Button
-              variant="outlined"
-              onClick={handleStartGame}
+            <Stack
               ref={introButtonRef}
-              sx={{
-                mt: 4,
-                color: "white",
-                borderColor: "rgba(255, 255, 255, 0.5)",
-                "&:hover": {
-                  borderColor: "white",
-                  backgroundColor: "rgba(255, 255, 255, 0.1)",
-                },
-              }}
+              direction="row"
+              sx={{ mt: 4, display: "flex", flexDirection: "column", alignItems: "center", gap: 1.5 }}
             >
-              進入試煉
-            </Button>
+              <Button
+                variant="outlined"
+                onClick={handleStartGame}
+                sx={{
+                  color: "white",
+                  borderColor: "rgba(255, 255, 255, 0.5)",
+                  letterSpacing: "0.15em",
+                  px: 4,
+                  "&:hover": {
+                    borderColor: "white",
+                    backgroundColor: "rgba(255, 255, 255, 0.1)",
+                  },
+                }}
+              >
+                進入試煉
+              </Button>
+              <Button
+                variant="outlined"
+                onClick={() => router.push("/sceneCollection")}
+                sx={{
+                  color: "white",
+                  borderColor: "rgba(255, 255, 255, 0.5)",
+                  letterSpacing: "0.15em",
+                  px: 4,
+                  "&:hover": {
+                    borderColor: "white",
+                    backgroundColor: "rgba(255, 255, 255, 0.1)",
+                  },
+                }}
+              >
+                場景搜集
+              </Button>
+            </Stack>
           )}
         </Box>
       </Box>

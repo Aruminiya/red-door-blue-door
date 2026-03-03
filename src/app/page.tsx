@@ -60,11 +60,21 @@ export default function Home() {
     }, 1000); // 等待房間揭示動畫結束 再分配下一回合，避免動畫與狀態更新衝突
   };
 
+  const UNLOCKED_ROOMS_KEY = "rdbd:unlocked_rooms";
+
   const handlePlayerChoice = (choice: "red" | "blue") => {
     const result = chooseDoor(choice);
     if (result.ok) {
       const chosenDoor = choice === "red" ? currentRedDoor : currentBlueDoor;
       roomRevealRef.current?.show(chosenDoor?.imageUrl ?? null, chosenDoor?.name, chosenDoor?.type);
+
+      const id = chosenDoor?.id;
+      if (id !== undefined) {
+        const prev = JSON.parse(localStorage.getItem(UNLOCKED_ROOMS_KEY) ?? "[]") as number[];
+        if (!prev.includes(id)) {
+          localStorage.setItem(UNLOCKED_ROOMS_KEY, JSON.stringify([...prev, id]));
+        }
+      }
     } else {
       console.warn(`無法選擇門扉: ${result.reason}`);
     }
