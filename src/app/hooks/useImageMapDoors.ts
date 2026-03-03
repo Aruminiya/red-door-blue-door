@@ -298,6 +298,6 @@ export function useImageMapDoors({
  * 座標格式: { x1: 左, y1: 上, x2: 右, y2: 下 }
  */
 export const DEFAULT_DOOR_COORDS: DoorCoordsConfig = {
-  red: { x1: 568, y1: 376, x2: 697, y2: 697 },   // 紅門區域
-  blue: { x1: 772, y1: 376, x2: 902, y2: 693 },  // 藍門區域
+  red: { x1: 600, y1: 375, x2: 733, y2: 692 },   // 紅門區域
+  blue: { x1: 805, y1: 376, x2: 937, y2: 695 },  // 藍門區域
 };
