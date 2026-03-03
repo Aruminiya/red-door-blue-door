@@ -1,11 +1,15 @@
 "use client";
 
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
-import { Box, Typography } from "@mui/material";
+import { Box, Snackbar, Typography } from "@mui/material";
 import gsap from "gsap";
+import allRooms from "@/room.json";
+
+const UNLOCKED_ROOMS_KEY = "rdbd:unlocked_rooms";
+const TOTAL_ROOMS = allRooms.length;
 
 export type RoomRevealHandle = {
-  show: (imageUrl: string | null, roomName?: string, roomType?: "Shelter" | "Asura") => void;
+  show: (imageUrl: string | null, roomName?: string, roomType?: "Shelter" | "Asura", isNewRoom?: boolean) => void;
   clear: () => void;
 };
 
@@ -29,6 +33,16 @@ const RoomRevealScreen = forwardRef<RoomRevealHandle, RoomRevealScreenProps>(
     const [overlayRoomType, setOverlayRoomType] = useState<"Shelter" | "Asura" | null>(null);
     const [bgImageUrl, setBgImageUrl] = useState<string | null>(null);
     const [exitVisible, setExitVisible] = useState(false);
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarInfo, setSnackbarInfo] = useState<{ name: string; count: number; type: "Shelter" | "Asura" } | null>(null);
+    const snackbarTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    // Clean up snackbar timer on unmount
+    useEffect(() => {
+      return () => {
+        if (snackbarTimerRef.current) clearTimeout(snackbarTimerRef.current);
+      };
+    }, []);
 
     // Pre-load audio elements once
     useEffect(() => {
@@ -54,12 +68,21 @@ const RoomRevealScreen = forwardRef<RoomRevealHandle, RoomRevealScreenProps>(
     };
 
     useImperativeHandle(ref, () => ({
-      show(imageUrl: string | null, roomName = "", roomType?: "Shelter" | "Asura") {
+      show(imageUrl: string | null, roomName = "", roomType?: "Shelter" | "Asura", isNewRoom = false) {
         currentImageUrlRef.current = imageUrl;
         setOverlayImageUrl(imageUrl);
         setOverlayRoomName(roomName);
         setOverlayRoomType(roomType ?? null);
         setOverlayVisible(true);
+
+        if (isNewRoom) {
+          const ids = JSON.parse(localStorage.getItem(UNLOCKED_ROOMS_KEY) ?? "[]") as number[];
+          if (snackbarTimerRef.current) clearTimeout(snackbarTimerRef.current);
+          snackbarTimerRef.current = setTimeout(() => {
+            setSnackbarInfo({ name: roomName, count: ids.length, type: roomType ?? "Shelter" });
+            setSnackbarOpen(true);
+          }, 1500);
+        }
       },
       clear() {
         if (!bgImageUrlRef.current) return;
@@ -171,8 +194,41 @@ const RoomRevealScreen = forwardRef<RoomRevealHandle, RoomRevealScreenProps>(
       };
     }, [exitVisible]);
 
+    const accentColor = snackbarInfo?.type === "Shelter" ? "#2ecc71" : "#e74c3c";
+
     return (
       <>
+        {/* New room unlock Snackbar */}
+        <Snackbar
+          open={snackbarOpen}
+          autoHideDuration={4000}
+          onClose={() => setSnackbarOpen(false)}
+          anchorOrigin={{ vertical: "top", horizontal: "left" }}
+          sx={{ zIndex: 10001 }}
+        >
+          <Box
+            sx={{
+              backgroundColor: "rgba(10, 12, 18, 0.92)",
+              border: `1px solid ${accentColor}`,
+              borderRadius: 1.5,
+              px: 2,
+              py: 1.25,
+              backdropFilter: "blur(8px)",
+              minWidth: 220,
+            }}
+          >
+            <Typography sx={{ color: accentColor, fontSize: "0.7rem", letterSpacing: "0.14em", mb: 0.25 }}>
+              ✦ 新場景解鎖
+            </Typography>
+            <Typography sx={{ color: "white", fontSize: "0.9rem", fontWeight: 600, letterSpacing: "0.05em", mb: 0.5 }}>
+              {snackbarInfo?.name}
+            </Typography>
+            <Typography sx={{ color: "rgba(255,255,255,0.4)", fontSize: "0.72rem", letterSpacing: "0.08em" }}>
+              已收集 {snackbarInfo?.count} / {TOTAL_ROOMS} 個場景
+            </Typography>
+          </Box>
+        </Snackbar>
+
         {/* Blurred room background — persists behind StoryDialog after reveal */}
         {bgImageUrl && (
           <Box

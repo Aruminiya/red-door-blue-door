@@ -66,15 +66,18 @@ export default function Home() {
     const result = chooseDoor(choice);
     if (result.ok) {
       const chosenDoor = choice === "red" ? currentRedDoor : currentBlueDoor;
-      roomRevealRef.current?.show(chosenDoor?.imageUrl ?? null, chosenDoor?.name, chosenDoor?.type);
 
+      let isNewRoom = false;
       const id = chosenDoor?.id;
       if (id !== undefined) {
         const prev = JSON.parse(localStorage.getItem(UNLOCKED_ROOMS_KEY) ?? "[]") as number[];
-        if (!prev.includes(id)) {
+        isNewRoom = !prev.includes(id);
+        if (isNewRoom) {
           localStorage.setItem(UNLOCKED_ROOMS_KEY, JSON.stringify([...prev, id]));
         }
       }
+
+      roomRevealRef.current?.show(chosenDoor?.imageUrl ?? null, chosenDoor?.name, chosenDoor?.type, isNewRoom);
     } else {
       console.warn(`無法選擇門扉: ${result.reason}`);
     }
