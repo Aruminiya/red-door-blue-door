@@ -8,13 +8,14 @@ import IntroScreen from "./components/IntroScreen";
 import RoomRevealScreen, { type RoomRevealHandle } from "./components/RoomRevealScreen";
 import StoryDialog from "./components/StoryDialog";
 import { useGame } from "./contexts/GameContext";
+import { useBgMusic } from "./contexts/BgMusicContext";
 import { useStoryGenerator } from "./hooks/useStoryGenerator";
 import { useToggle } from "./hooks/useToggle";
 
 export default function Home() {
   const [showIntro, setShowIntro] = useState(true);
 
-  const audioRef = useRef<HTMLAudioElement>(null);
+  const { play: playBgMusic } = useBgMusic();
   const roomRevealRef = useRef<RoomRevealHandle>(null);
 
   const {
@@ -71,8 +72,7 @@ export default function Home() {
 
   const handleIntroComplete = () => {
     setShowIntro(false);
-    audioRef.current!.volume = 0.2;
-    audioRef.current?.play().catch(console.error);
+    playBgMusic();
     handleNextRound();
   };
 
@@ -90,9 +90,6 @@ export default function Home() {
 
   return (
     <>
-      {/* Background Music - always rendered to persist across state changes */}
-      <audio ref={audioRef} src="/Lost Signals.mp3" loop />
-
       {/* Intro screen */}
       {showIntro ? (
         <IntroScreen onStartAction={handleIntroComplete} />

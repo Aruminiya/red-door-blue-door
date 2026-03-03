@@ -22,6 +22,7 @@ const RoomRevealScreen = forwardRef<RoomRevealHandle, RoomRevealScreenProps>(
     const exitWhiteRef = useRef<HTMLDivElement>(null);
     const shelterAudioRef = useRef<HTMLAudioElement | null>(null);
     const asuraAudioRef = useRef<HTMLAudioElement | null>(null);
+    const fadeDurationAudioRef = useRef<HTMLAudioElement | null>(null);
     const [overlayVisible, setOverlayVisible] = useState(false);
     const [overlayImageUrl, setOverlayImageUrl] = useState<string | null>(null);
     const [overlayRoomName, setOverlayRoomName] = useState<string>("");
@@ -32,9 +33,11 @@ const RoomRevealScreen = forwardRef<RoomRevealHandle, RoomRevealScreenProps>(
     // Pre-load audio elements once
     useEffect(() => {
       shelterAudioRef.current = new Audio("/Shelter_ElementalGoodHighShimmering.mp3");
-      shelterAudioRef.current.volume = 0.3;
+      shelterAudioRef.current.volume = 0.2;
       asuraAudioRef.current = new Audio("/Asura_SmallDroneHorror.mp3");
       asuraAudioRef.current.volume = 0.3;
+      fadeDurationAudioRef.current = new Audio("/Zoom.mp3");
+      fadeDurationAudioRef.current.volume = 0.2;
     }, []);
 
     // Stable refs for GSAP callbacks to avoid stale closures
@@ -81,18 +84,29 @@ const RoomRevealScreen = forwardRef<RoomRevealHandle, RoomRevealScreenProps>(
 
       // tl1: white flash — container fade in, then white fade out
       const tl1 = gsap.timeline();
-      tl1.to(container, { opacity: 1, duration: 1.5, ease: "power2.out" });
+      tl1.to(container, {
+        opacity: 1,
+        duration: 1.5,
+        ease: "power2.out",
+        onStart: () => {
+          const fadeAudio = fadeDurationAudioRef.current;
+          if (fadeAudio) {
+            fadeAudio.currentTime = 0;
+            fadeAudio.play().catch(() => {});
+          }
+        }
+      });
       tl1.to(white, {
         opacity: 0,
         duration: 1.5,
         ease: "power2.inOut",
         onStart: () => {
-          const audio = overlayRoomTypeRef.current === "Shelter"
+          const roomAudio = overlayRoomTypeRef.current === "Shelter"
             ? shelterAudioRef.current
             : asuraAudioRef.current;
-          if (audio) {
-            audio.currentTime = 0;
-            audio.play().catch(() => {});
+          if (roomAudio) {
+            roomAudio.currentTime = 0;
+            roomAudio.play().catch(() => {});
           }
         },
       });
