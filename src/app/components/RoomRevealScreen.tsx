@@ -5,7 +5,7 @@ import { Box, Typography } from "@mui/material";
 import gsap from "gsap";
 
 export type RoomRevealHandle = {
-  show: (imageUrl: string | null, roomName?: string) => void;
+  show: (imageUrl: string | null, roomName?: string, roomType?: "Shelter" | "Asura") => void;
   clear: () => void;
 };
 
@@ -20,15 +20,28 @@ const RoomRevealScreen = forwardRef<RoomRevealHandle, RoomRevealScreenProps>(
     const whiteRef = useRef<HTMLDivElement>(null);
     const titleRef = useRef<HTMLDivElement>(null);
     const exitWhiteRef = useRef<HTMLDivElement>(null);
+    const shelterAudioRef = useRef<HTMLAudioElement | null>(null);
+    const asuraAudioRef = useRef<HTMLAudioElement | null>(null);
     const [overlayVisible, setOverlayVisible] = useState(false);
     const [overlayImageUrl, setOverlayImageUrl] = useState<string | null>(null);
     const [overlayRoomName, setOverlayRoomName] = useState<string>("");
+    const [overlayRoomType, setOverlayRoomType] = useState<"Shelter" | "Asura" | null>(null);
     const [bgImageUrl, setBgImageUrl] = useState<string | null>(null);
     const [exitVisible, setExitVisible] = useState(false);
+
+    // Pre-load audio elements once
+    useEffect(() => {
+      shelterAudioRef.current = new Audio("/Shelter_ElementalGoodHighShimmering.mp3");
+      shelterAudioRef.current.volume = 0.3;
+      asuraAudioRef.current = new Audio("/Asura_SmallDroneHorror.mp3");
+      asuraAudioRef.current.volume = 0.3;
+    }, []);
 
     // Stable refs for GSAP callbacks to avoid stale closures
     const onCompleteRef = useRef(onCompleteAction);
     onCompleteRef.current = onCompleteAction;
+    const overlayRoomTypeRef = useRef(overlayRoomType);
+    overlayRoomTypeRef.current = overlayRoomType;
     const currentImageUrlRef = useRef<string | null>(null);
     const bgImageUrlRef = useRef<string | null>(null);
 
@@ -38,10 +51,11 @@ const RoomRevealScreen = forwardRef<RoomRevealHandle, RoomRevealScreenProps>(
     };
 
     useImperativeHandle(ref, () => ({
-      show(imageUrl: string | null, roomName = "") {
+      show(imageUrl: string | null, roomName = "", roomType?: "Shelter" | "Asura") {
         currentImageUrlRef.current = imageUrl;
         setOverlayImageUrl(imageUrl);
         setOverlayRoomName(roomName);
+        setOverlayRoomType(roomType ?? null);
         setOverlayVisible(true);
       },
       clear() {
@@ -68,7 +82,20 @@ const RoomRevealScreen = forwardRef<RoomRevealHandle, RoomRevealScreenProps>(
       // tl1: white flash — container fade in, then white fade out
       const tl1 = gsap.timeline();
       tl1.to(container, { opacity: 1, duration: 1.5, ease: "power2.out" });
-      tl1.to(white, { opacity: 0, duration: 1.5, ease: "power2.inOut" });
+      tl1.to(white, {
+        opacity: 0,
+        duration: 1.5,
+        ease: "power2.inOut",
+        onStart: () => {
+          const audio = overlayRoomTypeRef.current === "Shelter"
+            ? shelterAudioRef.current
+            : asuraAudioRef.current;
+          if (audio) {
+            audio.currentTime = 0;
+            audio.play().catch(() => {});
+          }
+        },
+      });
 
       // tl2: image life — starts when container is fully visible (delay: 1.5s),
       // so scale begins while white is still fading, creating a fluid overlap

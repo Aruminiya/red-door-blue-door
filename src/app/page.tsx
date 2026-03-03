@@ -56,14 +56,14 @@ export default function Home() {
       if (!result.ok) {
         console.warn(`無法分配門扉: ${result.reason}`);
       }
-    }, 300); // 等待房間揭示動畫結束 再分配下一回合，避免動畫與狀態更新衝突
+    }, 1000); // 等待房間揭示動畫結束 再分配下一回合，避免動畫與狀態更新衝突
   };
 
   const handlePlayerChoice = (choice: "red" | "blue") => {
     const result = chooseDoor(choice);
     if (result.ok) {
       const chosenDoor = choice === "red" ? currentRedDoor : currentBlueDoor;
-      roomRevealRef.current?.show(chosenDoor?.imageUrl ?? null, chosenDoor?.name);
+      roomRevealRef.current?.show(chosenDoor?.imageUrl ?? null, chosenDoor?.name, chosenDoor?.type);
     } else {
       console.warn(`無法選擇門扉: ${result.reason}`);
     }
