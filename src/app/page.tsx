@@ -1,23 +1,22 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Box } from "@mui/material";
 import DoorSelector from "./components/DoorSelector";
 import GameInfoPanel from "./components/GameInfoPanel";
 import IntroScreen from "./components/IntroScreen";
+import RoomRevealScreen, { type RoomRevealHandle } from "./components/RoomRevealScreen";
 import StoryDialog from "./components/StoryDialog";
 import { useGame } from "./contexts/GameContext";
 import { useStoryGenerator } from "./hooks/useStoryGenerator";
 import { useToggle } from "./hooks/useToggle";
 
 export default function Home() {
-  // Intro state
   const [showIntro, setShowIntro] = useState(true);
 
-  // Background music ref
   const audioRef = useRef<HTMLAudioElement>(null);
+  const roomRevealRef = useRef<RoomRevealHandle>(null);
 
-  // Game state from context
   const {
     heart,
     playerChoice,
@@ -50,16 +49,21 @@ export default function Home() {
     }
     closeStoryDialog();
     clearOutput();
-    const result = assignRound();
-    if (!result.ok) {
-      console.warn(`無法分配門扉: ${result.reason}`);
-    }
+    roomRevealRef.current?.clear();
+
+    setTimeout(() => {
+      const result = assignRound();
+      if (!result.ok) {
+        console.warn(`無法分配門扉: ${result.reason}`);
+      }
+    }, 300); // 等待房間揭示動畫結束 再分配下一回合，避免動畫與狀態更新衝突
   };
 
   const handlePlayerChoice = (choice: "red" | "blue") => {
     const result = chooseDoor(choice);
     if (result.ok) {
-      openStoryDialog();
+      const chosenDoor = choice === "red" ? currentRedDoor : currentBlueDoor;
+      roomRevealRef.current?.show(chosenDoor?.imageUrl ?? null, chosenDoor?.name);
     } else {
       console.warn(`無法選擇門扉: ${result.reason}`);
     }
@@ -67,11 +71,20 @@ export default function Home() {
 
   const handleIntroComplete = () => {
     setShowIntro(false);
-    // Start background music after user interaction
     audioRef.current!.volume = 0.2;
     audioRef.current?.play().catch(console.error);
     handleNextRound();
   };
+
+  // 回合分配後立即預先載入兩張房間圖像，
+  // 這樣瀏覽器在玩家點擊前就能快取它們。
+  useEffect(() => {
+    [currentRedDoor?.imageUrl, currentBlueDoor?.imageUrl].forEach((url) => {
+      if (!url) return;
+      const img = new Image();
+      img.src = url;
+    });
+  }, [currentRedDoor, currentBlueDoor]);
 
   const showDoorSelection = round.length > 0 && playerChoice.length !== round.length;
 
@@ -117,6 +130,12 @@ export default function Home() {
           />
         </Box>
       )}
+
+      {/* Room Reveal — manages full-screen overlay + blurred background internally */}
+      <RoomRevealScreen
+        ref={roomRevealRef}
+        onCompleteAction={openStoryDialog}
+      />
     </>
   );
 }

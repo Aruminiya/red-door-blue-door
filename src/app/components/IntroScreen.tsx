@@ -41,7 +41,7 @@ export default function IntroScreen({ onStartAction }: IntroScreenProps) {
       tl.fromTo(
         line,
         { opacity: 0, y: 10 },
-        { opacity: 1, y: 0, duration: 3, ease: "power2.out" },
+        { opacity: 1, y: 0, duration: 1, ease: "power2.out" },
         index === 0 ? "+=0.3" : "-=0.3"
       );
     });
