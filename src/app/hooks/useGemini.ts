@@ -15,16 +15,6 @@ export function useGemini(): UseGeminiReturn {
   const [output, setOutput] = useState<string>("");
 
   const submit = useCallback(async (prompt: string) => {
-
-    // TODO 開發為了省錢 暫時註解掉 useGemini API 呼叫
-    setLoading(true);
-    setError(null);
-    setTimeout(() => {
-      setOutput(`開發為了省錢 暫時註解掉 API 呼叫 這是模擬的回應，收到的提示詞是：\n${prompt}`);
-      setLoading(false);
-    }, 300);
-    return;
-
     try {
       setLoading(true);
       setError(null);
