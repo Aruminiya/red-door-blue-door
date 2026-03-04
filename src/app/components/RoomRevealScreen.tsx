@@ -195,6 +195,8 @@ const RoomRevealScreen = forwardRef<RoomRevealHandle, RoomRevealScreenProps>(
     }, [exitVisible]);
 
     const accentColor = snackbarInfo?.type === "Shelter" ? "#2ecc71" : "#e74c3c";
+    const revealAccentColor = overlayRoomType === "Shelter" ? "#2ecc71" : "#e74c3c";
+    const revealTypeLabel = overlayRoomType === "Shelter" ? "避難所 · Shelter" : "修羅場 · Asura";
 
     return (
       <>
@@ -291,6 +293,15 @@ const RoomRevealScreen = forwardRef<RoomRevealHandle, RoomRevealScreenProps>(
                 backgroundColor: overlayImageUrl ? "transparent" : "#000",
               }}
             />
+            {/* Gradient overlay */}
+            <Box
+              sx={{
+                position: "absolute",
+                inset: 0,
+                background: "linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.05) 35%, rgba(0,0,0,0.65) 65%, rgba(0,0,0,0.92) 100%)",
+                pointerEvents: "none",
+              }}
+            />
             {/* White flash — fades out to reveal the image */}
             <Box
               ref={whiteRef}
@@ -300,28 +311,69 @@ const RoomRevealScreen = forwardRef<RoomRevealHandle, RoomRevealScreenProps>(
                 backgroundColor: "#fff",
               }}
             />
-            {/* Room name — bottom-left, appears during scale hold */}
+            {/* Room info — bottom-left, appears during scale hold */}
             {overlayRoomName && (
               <Box
                 ref={titleRef}
                 sx={{
                   position: "absolute",
-                  bottom: 48,
-                  left: 48,
+                  bottom: { xs: 32, md: 48 },
+                  left: { xs: 24, md: 48 },
                   opacity: 0,
                 }}
               >
+                {/* Type badge */}
+                {overlayRoomType && (
+                  <Box
+                    sx={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 0.75,
+                      mb: 1.5,
+                      px: 1.5,
+                      py: 0.5,
+                      borderRadius: 1,
+                      backgroundColor: `${revealAccentColor}1a`,
+                      border: `1px solid ${revealAccentColor}55`,
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        width: 6,
+                        height: 6,
+                        borderRadius: "50%",
+                        bgcolor: revealAccentColor,
+                        boxShadow: `0 0 5px ${revealAccentColor}`,
+                      }}
+                    />
+                    <Typography
+                      sx={{
+                        color: revealAccentColor,
+                        fontSize: "0.7rem",
+                        letterSpacing: "0.18em",
+                        fontWeight: 600,
+                        textTransform: "uppercase",
+                      }}
+                    >
+                      {revealTypeLabel}
+                    </Typography>
+                  </Box>
+                )}
+                {/* Room name */}
                 <Typography
-                  variant="h3"
                   sx={{
                     color: "#fff",
                     fontWeight: 700,
+                    fontSize: { xs: "2rem", md: "3rem" },
                     letterSpacing: "0.08em",
-                    textShadow: "0 2px 16px rgba(0,0,0,0.6)",
+                    lineHeight: 1.2,
+                    textShadow: "0 2px 20px rgba(0,0,0,0.7)",
                   }}
                 >
                   {overlayRoomName}
                 </Typography>
+                {/* Divider */}
+                <Box sx={{ width: 40, height: "1px", bgcolor: "rgba(255,255,255,0.3)", mt: 1.5 }} />
               </Box>
             )}
           </Box>

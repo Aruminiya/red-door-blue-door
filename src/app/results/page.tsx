@@ -16,17 +16,23 @@ import gsap from "gsap";
 import { useGame } from "@/app/contexts/GameContext";
 import DoorData from "@/app/components/DoorData";
 
-const glassCard = {
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  gap: 0.5,
-  p: 2,
-  backgroundColor: "rgba(255,255,255,0.05)",
-  border: "1px solid rgba(255,255,255,0.1)",
-  borderRadius: 2,
-  textAlign: "center",
-} as const;
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2 }}>
+      <Box sx={{ width: 3, height: 14, bgcolor: "rgba(255,255,255,0.18)", borderRadius: "2px" }} />
+      <Typography
+        sx={{
+          color: "rgba(255,255,255,0.28)",
+          fontSize: "0.72rem",
+          letterSpacing: "0.22em",
+          textTransform: "uppercase",
+        }}
+      >
+        {children}
+      </Typography>
+    </Box>
+  );
+}
 
 export default function ResultsPage() {
   const router = useRouter();
@@ -45,11 +51,18 @@ export default function ResultsPage() {
   const blueCount = playerChoice.filter((c) => c === "blue").length;
 
   useEffect(() => {
-    const els = [heroRef.current, statsRef.current, timelineRef.current, detailsRef.current, btnRef.current, sceneBtnRef.current].filter(Boolean);
+    const els = [
+      heroRef.current,
+      statsRef.current,
+      timelineRef.current,
+      detailsRef.current,
+      btnRef.current,
+      sceneBtnRef.current,
+    ].filter(Boolean);
     gsap.fromTo(
       els,
-      { opacity: 0, y: 24 },
-      { opacity: 1, y: 0, duration: 0.9, stagger: 0.18, ease: "power2.out" }
+      { opacity: 0, y: 28 },
+      { opacity: 1, y: 0, duration: 1, stagger: 0.16, ease: "power2.out" }
     );
   }, []);
 
@@ -59,9 +72,11 @@ export default function ResultsPage() {
     : `第 ${totalRounds} 回合，迴廊將你吞噬`;
   const heroColor = cleared ? "#e8c96a" : "#c0392b";
 
+  const hpStatColor = heart > 5 ? "#2ecc71" : heart > 2 ? "#e8c96a" : "#e74c3c";
+
   return (
     <Box sx={{ minHeight: "100svh", position: "relative" }}>
-      {/* Blurred background image layer */}
+      {/* Blurred background */}
       <Box
         sx={{
           position: "fixed",
@@ -69,9 +84,8 @@ export default function ResultsPage() {
           backgroundImage: "url('/PureWhiteCorridor.png')",
           backgroundSize: "cover",
           backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
           filter: "blur(6px)",
-          transform: "scale(1.05)", // 補償 blur 邊緣透明
+          transform: "scale(1.05)",
           zIndex: 0,
         }}
       />
@@ -80,32 +94,56 @@ export default function ResultsPage() {
         sx={{
           position: "fixed",
           inset: 0,
-          backgroundColor: "rgba(0, 0, 0, 0.82)",
+          backgroundColor: "rgba(0,0,0,0.84)",
           zIndex: 1,
         }}
       />
-      <Container maxWidth="sm" sx={{ position: "relative", zIndex: 2, py: { xs: 5, md: 8 } }}>
-        <Stack spacing={4}>
 
-          {/* ── Hero Banner ── */}
+      <Container maxWidth="sm" sx={{ position: "relative", zIndex: 2, py: { xs: 6, md: 9 } }}>
+        <Stack spacing={5}>
+
+          {/* ── Hero ── */}
           <Box ref={heroRef} sx={{ textAlign: "center", opacity: 0 }}>
+            <Typography
+              sx={{
+                fontSize: "0.72rem",
+                letterSpacing: "0.3em",
+                color: "rgba(255,255,255,0.2)",
+                textTransform: "uppercase",
+                mb: 2.5,
+              }}
+            >
+              Pure White Corridor — Result
+            </Typography>
+
             <Typography
               sx={{
                 color: heroColor,
                 fontWeight: 700,
-                fontSize: { xs: "1.6rem", md: "2rem" },
-                letterSpacing: "0.2em",
-                lineHeight: 1.5,
-                mb: 1.5,
+                fontSize: { xs: "1.55rem", md: "1.95rem" },
+                letterSpacing: "0.18em",
+                lineHeight: 1.45,
+                mb: 2.5,
+                textShadow: `0 0 48px ${heroColor}55`,
               }}
             >
               {heroTitle}
             </Typography>
-            <Box
-              sx={{ width: 56, height: "1px", bgcolor: heroColor, mx: "auto", mb: 1.5, opacity: 0.5 }}
-            />
+
+            {/* Decorative divider */}
+            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 1.5, mb: 2.5 }}>
+              <Box sx={{ width: 48, height: "1px", bgcolor: heroColor, opacity: 0.3 }} />
+              <Box sx={{ width: 5, height: 5, borderRadius: "50%", bgcolor: heroColor, opacity: 0.55 }} />
+              <Box sx={{ width: 48, height: "1px", bgcolor: heroColor, opacity: 0.3 }} />
+            </Box>
+
             <Typography
-              sx={{ color: "rgba(255,255,255,0.45)", letterSpacing: "0.1em", fontSize: "0.875rem" }}
+              sx={{
+                color: "rgba(255,255,255,0.38)",
+                letterSpacing: "0.1em",
+                fontSize: "0.92rem",
+                lineHeight: 1.8,
+              }}
             >
               {heroSubtitle}
             </Typography>
@@ -113,7 +151,7 @@ export default function ResultsPage() {
 
           {totalRounds > 0 && (
             <>
-              {/* ── Stats Cards ── */}
+              {/* ── Stats ── */}
               <Box
                 ref={statsRef}
                 sx={{
@@ -124,41 +162,89 @@ export default function ResultsPage() {
                 }}
               >
                 {/* HP */}
-                <Box sx={glassCard}>
-                  <Typography sx={{ fontSize: "1.6rem", lineHeight: 1 }}>❤️</Typography>
-                  <Typography sx={{ color: "white", fontSize: "1.5rem", fontWeight: 700, lineHeight: 1.2 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: 0.75,
+                    pt: 2.5,
+                    pb: 2,
+                    px: 1,
+                    backgroundColor: "rgba(255,255,255,0.03)",
+                    border: "1px solid rgba(255,255,255,0.07)",
+                    borderTop: `2px solid ${hpStatColor}`,
+                    borderRadius: 2,
+                    textAlign: "center",
+                  }}
+                >
+                  <Typography sx={{ color: hpStatColor, fontSize: "2rem", fontWeight: 800, lineHeight: 1, letterSpacing: "-0.02em" }}>
                     {heart}
                   </Typography>
-                  <Typography sx={{ color: "rgba(255,255,255,0.45)", fontSize: "0.72rem", letterSpacing: "0.08em" }}>
+                  <Typography sx={{ color: "rgba(255,255,255,0.22)", fontSize: "0.72rem", letterSpacing: "0.14em", textTransform: "uppercase" }}>
                     最終血量
                   </Typography>
                 </Box>
 
                 {/* Rounds */}
-                <Box sx={glassCard}>
-                  <Typography sx={{ fontSize: "1.6rem", lineHeight: 1 }}>⚔️</Typography>
-                  <Typography sx={{ color: "white", fontSize: "1.5rem", fontWeight: 700, lineHeight: 1.2 }}>
-                    {totalRounds}
-                    <Typography component="span" sx={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.4)" }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: 0.75,
+                    pt: 2.5,
+                    pb: 2,
+                    px: 1,
+                    backgroundColor: "rgba(255,255,255,0.03)",
+                    border: "1px solid rgba(255,255,255,0.07)",
+                    borderTop: "2px solid rgba(255,255,255,0.25)",
+                    borderRadius: 2,
+                    textAlign: "center",
+                  }}
+                >
+                  <Box sx={{ display: "flex", alignItems: "baseline", gap: 0.25 }}>
+                    <Typography sx={{ color: "rgba(255,255,255,0.9)", fontSize: "2rem", fontWeight: 800, lineHeight: 1, letterSpacing: "-0.02em" }}>
+                      {totalRounds}
+                    </Typography>
+                    <Typography sx={{ color: "rgba(255,255,255,0.2)", fontSize: "0.85rem" }}>
                       /10
                     </Typography>
-                  </Typography>
-                  <Typography sx={{ color: "rgba(255,255,255,0.45)", fontSize: "0.72rem", letterSpacing: "0.08em" }}>
+                  </Box>
+                  <Typography sx={{ color: "rgba(255,255,255,0.22)", fontSize: "0.72rem", letterSpacing: "0.14em", textTransform: "uppercase" }}>
                     總回合數
                   </Typography>
                 </Box>
 
                 {/* Door ratio */}
-                <Box sx={glassCard}>
-                  <Typography sx={{ fontSize: "1.6rem", lineHeight: 1 }}>🚪</Typography>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: 0.75,
+                    pt: 2.5,
+                    pb: 2,
+                    px: 1,
+                    backgroundColor: "rgba(255,255,255,0.03)",
+                    border: "1px solid rgba(255,255,255,0.07)",
+                    borderTop: "2px solid rgba(255,255,255,0.25)",
+                    borderRadius: 2,
+                    textAlign: "center",
+                  }}
+                >
                   <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
-                    <Typography sx={{ fontSize: "1rem" }}>🔴</Typography>
-                    <Typography sx={{ color: "#e74c3c", fontWeight: 700, fontSize: "1.1rem" }}>{redCount}</Typography>
-                    <Typography sx={{ color: "rgba(255,255,255,0.25)" }}>|</Typography>
-                    <Typography sx={{ color: "#3498db", fontWeight: 700, fontSize: "1.1rem" }}>{blueCount}</Typography>
-                    <Typography sx={{ fontSize: "1rem" }}>🔵</Typography>
+                    <Box sx={{ display: "flex", alignItems: "baseline", gap: 0.25 }}>
+                      <Box sx={{ width: 7, height: 7, borderRadius: "50%", bgcolor: "#e74c3c", flexShrink: 0 }} />
+                      <Typography sx={{ color: "#e74c3c", fontWeight: 800, fontSize: "2rem", lineHeight: 1 }}>{redCount}</Typography>
+                    </Box>
+                    <Typography sx={{ color: "rgba(255,255,255,0.15)", fontSize: "0.9rem" }}>·</Typography>
+                    <Box sx={{ display: "flex", alignItems: "baseline", gap: 0.25 }}>
+                      <Box sx={{ width: 7, height: 7, borderRadius: "50%", bgcolor: "#3498db", flexShrink: 0 }} />
+                      <Typography sx={{ color: "#3498db", fontWeight: 800, fontSize: "2rem", lineHeight: 1 }}>{blueCount}</Typography>
+                    </Box>
                   </Box>
-                  <Typography sx={{ color: "rgba(255,255,255,0.45)", fontSize: "0.72rem", letterSpacing: "0.08em", mt: 0.5 }}>
+                  <Typography sx={{ color: "rgba(255,255,255,0.22)", fontSize: "0.72rem", letterSpacing: "0.14em", textTransform: "uppercase" }}>
                     門扉選擇
                   </Typography>
                 </Box>
@@ -166,12 +252,8 @@ export default function ResultsPage() {
 
               {/* ── Timeline ── */}
               <Box ref={timelineRef} sx={{ opacity: 0 }}>
-                <Typography
-                  sx={{ color: "rgba(255,255,255,0.3)", fontSize: "0.7rem", letterSpacing: "0.18em", mb: 1.5, textTransform: "uppercase" }}
-                >
-                  選門軌跡
-                </Typography>
-                <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+                <SectionLabel>選門軌跡</SectionLabel>
+                <Box sx={{ display: "flex", alignItems: "flex-start", overflowX: "auto", pb: 1, gap: 0 }}>
                   {round.map((r, index) => {
                     const choice = playerChoice[index];
                     if (!choice) return null;
@@ -179,88 +261,108 @@ export default function ResultsPage() {
                     const isShelter = chosenDoor.type === "Shelter";
                     const hpColor = isShelter ? "#2ecc71" : "#e74c3c";
                     const isRed = choice === "red";
+                    const dotColor = isRed ? "#e74c3c" : "#3498db";
+                    const isLast = index === round.length - 1;
                     return (
-                      <Box
-                        key={index}
-                        sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 0.5, minWidth: 38 }}
-                      >
-                        <Typography
-                          sx={{ fontSize: "0.6rem", color: "rgba(255,255,255,0.3)", letterSpacing: "0.05em" }}
-                        >
-                          R{index + 1}
-                        </Typography>
-                        <Box
-                          sx={{
-                            width: 30,
-                            height: 30,
-                            borderRadius: "50%",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            bgcolor: isRed ? "rgba(231, 76, 60, 0.2)" : "rgba(52, 152, 219, 0.2)",
-                            border: `1.5px solid ${isRed ? "#e74c3c" : "#3498db"}`,
-                            fontSize: "0.65rem",
-                          }}
-                        >
-                          {isRed ? "🔴" : "🔵"}
+                      <Box key={index} sx={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
+                        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 0.6, minWidth: 36 }}>
+                          <Typography sx={{ fontSize: "0.68rem", color: "rgba(255,255,255,0.25)", letterSpacing: "0.06em" }}>
+                            R{index + 1}
+                          </Typography>
+                          <Box
+                            sx={{
+                              width: 26,
+                              height: 26,
+                              borderRadius: "50%",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              bgcolor: `${dotColor}15`,
+                              border: `1.5px solid ${dotColor}`,
+                              boxShadow: `0 0 8px ${dotColor}33`,
+                            }}
+                          >
+                            <Box sx={{ width: 7, height: 7, borderRadius: "50%", bgcolor: dotColor }} />
+                          </Box>
+                          <Typography sx={{ fontSize: "0.75rem", color: hpColor, fontWeight: 700 }}>
+                            {chosenDoor.hp_change > 0 ? "+" : ""}{chosenDoor.hp_change}
+                          </Typography>
                         </Box>
-                        <Typography sx={{ fontSize: "0.68rem", color: hpColor, fontWeight: 600 }}>
-                          {chosenDoor.hp_change > 0 ? "+" : ""}
-                          {chosenDoor.hp_change}
-                        </Typography>
+                        {!isLast && (
+                          <Box sx={{ width: 10, height: "1px", bgcolor: "rgba(255,255,255,0.08)", flexShrink: 0, mb: 2 }} />
+                        )}
                       </Box>
                     );
                   })}
                 </Box>
               </Box>
 
-              {/* ── Round Details (Accordion) ── */}
+              {/* ── Round Details ── */}
               <Box ref={detailsRef} sx={{ opacity: 0 }}>
-                <Typography
-                  sx={{ color: "rgba(255,255,255,0.3)", fontSize: "0.7rem", letterSpacing: "0.18em", mb: 1.5, textTransform: "uppercase" }}
-                >
-                  回合詳情
-                </Typography>
+                <SectionLabel>回合詳情</SectionLabel>
                 <Stack spacing={1}>
                   {round.map((r, index) => {
                     const choice = playerChoice[index];
                     if (!choice) return null;
                     const chosenDoor = choice === "red" ? r.redDoor : r.blueDoor;
                     const isRed = choice === "red";
+                    const isShelter = chosenDoor.type === "Shelter";
+                    const hpColor = isShelter ? "#2ecc71" : "#e74c3c";
+                    const doorColor = isRed ? "#e74c3c" : "#3498db";
                     return (
                       <Accordion
                         key={`${index}-${r.redDoor.id}-${r.blueDoor.id}`}
                         disableGutters
                         sx={{
-                          backgroundColor: "rgba(255,255,255,0.04)",
-                          border: "1px solid rgba(255,255,255,0.09)",
+                          backgroundColor: "rgba(255,255,255,0.025)",
+                          border: "1px solid rgba(255,255,255,0.07)",
                           borderRadius: "8px !important",
                           "&:before": { display: "none" },
                           "&.Mui-expanded": {
-                            borderColor: isRed ? "rgba(231,76,60,0.45)" : "rgba(52,152,219,0.45)",
+                            borderColor: `${doorColor}44`,
+                            backgroundColor: "rgba(255,255,255,0.04)",
                           },
                         }}
                       >
                         <AccordionSummary
                           expandIcon={
-                            <Typography sx={{ color: "rgba(255,255,255,0.35)", fontSize: "1rem" }}>▾</Typography>
+                            <Typography sx={{ color: "rgba(255,255,255,0.3)", fontSize: "0.9rem" }}>▾</Typography>
                           }
+                          sx={{ minHeight: 48, "& .MuiAccordionSummary-content": { my: 0 } }}
                         >
-                          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                            <Typography sx={{ color: "rgba(255,255,255,0.5)", fontSize: "0.8rem" }}>
-                              第 {index + 1} 回合
-                            </Typography>
-                            <Typography
-                              sx={{ color: isRed ? "#e74c3c" : "#3498db", fontSize: "0.85rem", fontWeight: 600 }}
+                          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, width: "100%", pr: 1 }}>
+                            {/* Round number badge */}
+                            <Box
+                              sx={{
+                                minWidth: 28,
+                                height: 28,
+                                borderRadius: 1,
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                bgcolor: `${doorColor}18`,
+                                border: `1px solid ${doorColor}44`,
+                              }}
                             >
-                              {isRed ? "🔴 紅門" : "🔵 藍門"}
+                              <Typography sx={{ color: doorColor, fontSize: "0.8rem", fontWeight: 700 }}>
+                                {index + 1}
+                              </Typography>
+                            </Box>
+                            {/* Door */}
+                            <Typography sx={{ color: doorColor, fontSize: "0.9rem", fontWeight: 600 }}>
+                              {isRed ? "紅門" : "藍門"}
                             </Typography>
-                            <Typography sx={{ color: "rgba(255,255,255,0.3)", fontSize: "0.78rem" }}>
-                              {chosenDoor.type === "Shelter" ? "避難所" : "修羅場"}
+                            {/* Room name */}
+                            <Typography sx={{ color: "rgba(255,255,255,0.55)", fontSize: "0.88rem", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                              {chosenDoor.name}
+                            </Typography>
+                            {/* HP delta */}
+                            <Typography sx={{ color: hpColor, fontSize: "0.85rem", fontWeight: 700, letterSpacing: "0.04em", flexShrink: 0 }}>
+                              {chosenDoor.hp_change > 0 ? "+" : ""}{chosenDoor.hp_change}
                             </Typography>
                           </Box>
                         </AccordionSummary>
-                        <AccordionDetails sx={{ pt: 0 }}>
+                        <AccordionDetails sx={{ pt: 0, px: 2, pb: 2 }}>
                           <DoorData doorData={chosenDoor} doorColor={choice} tone="dark" isShowDoorColor={false} />
                         </AccordionDetails>
                       </Accordion>
@@ -273,12 +375,12 @@ export default function ResultsPage() {
 
           {/* No data */}
           {totalRounds === 0 && (
-            <Typography sx={{ color: "rgba(255,255,255,0.4)", textAlign: "center", letterSpacing: "0.1em" }}>
+            <Typography sx={{ color: "rgba(255,255,255,0.3)", textAlign: "center", letterSpacing: "0.12em", fontSize: "0.85rem" }}>
               沒有找到成績資料。
             </Typography>
           )}
 
-          {/* ── Restart Button ── */}
+          {/* ── Buttons ── */}
           <Button
             ref={btnRef}
             variant="outlined"
@@ -289,22 +391,21 @@ export default function ResultsPage() {
             }}
             sx={{
               opacity: 0,
-              color: "rgba(255,255,255,0.8)",
-              borderColor: "rgba(255,255,255,0.25)",
+              color: "#e8c96a",
+              borderColor: "rgba(232,201,106,0.35)",
               letterSpacing: "0.2em",
-              py: 1.5,
-              fontSize: "0.9rem",
+              py: 1.6,
+              fontSize: "0.88rem",
+              transition: "all 0.2s",
               "&:hover": {
-                borderColor: "white",
-                backgroundColor: "rgba(255,255,255,0.08)",
-                color: "white",
+                borderColor: "#e8c96a",
+                backgroundColor: "rgba(232,201,106,0.07)",
               },
             }}
           >
             再次踏入純白迴廊
           </Button>
 
-          {/* ── Scene Collection Button ── */}
           <Button
             ref={sceneBtnRef}
             variant="text"
@@ -312,10 +413,11 @@ export default function ResultsPage() {
             onClick={() => router.push("/sceneCollection")}
             sx={{
               opacity: 0,
-              color: "rgba(255,255,255,0.45)",
+              color: "rgba(255,255,255,0.3)",
               letterSpacing: "0.15em",
-              fontSize: "0.85rem",
-              "&:hover": { color: "rgba(255,255,255,0.8)" },
+              fontSize: "0.8rem",
+              mt: -2,
+              "&:hover": { color: "rgba(255,255,255,0.65)" },
             }}
           >
             前往場景搜集

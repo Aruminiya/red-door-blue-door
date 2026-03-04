@@ -8,15 +8,18 @@ type Settings = {
   bgMusicVolume: number;
   bgMusicEnabled: boolean;
   sfxEnabled: boolean;
+  sfxVolume: number;
 };
 
+const DEFAULT_SETTINGS: Settings = { bgMusicVolume: 0.2, bgMusicEnabled: true, sfxEnabled: true, sfxVolume: 0.5 };
+
 function loadSettings(): Settings {
-  if (typeof window === "undefined") return { bgMusicVolume: 0.2, bgMusicEnabled: true, sfxEnabled: true };
+  if (typeof window === "undefined") return DEFAULT_SETTINGS;
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return { bgMusicVolume: 0.2, bgMusicEnabled: true, sfxEnabled: true, ...JSON.parse(raw) };
+    if (raw) return { ...DEFAULT_SETTINGS, ...JSON.parse(raw) };
   } catch {}
-  return { bgMusicVolume: 0.2, bgMusicEnabled: true, sfxEnabled: true };
+  return DEFAULT_SETTINGS;
 }
 
 type BgMusicContextValue = {
@@ -24,7 +27,9 @@ type BgMusicContextValue = {
   bgMusicVolume: number;
   bgMusicEnabled: boolean;
   sfxEnabled: boolean;
+  sfxVolume: number;
   setBgMusicVolume: (v: number) => void;
+  setSfxVolume: (v: number) => void;
   toggleBgMusic: () => void;
   toggleSfx: () => void;
 };
@@ -38,6 +43,7 @@ export function BgMusicProvider({ children }: { children: ReactNode }) {
   const [bgMusicVolume, setBgMusicVolumeState] = useState<number>(0.2);
   const [bgMusicEnabled, setBgMusicEnabled] = useState<boolean>(true);
   const [sfxEnabled, setSfxEnabled] = useState<boolean>(true);
+  const [sfxVolume, setSfxVolumeState] = useState<number>(0.5);
   const [initialized, setInitialized] = useState(false);
 
   // Load from localStorage on mount
@@ -46,14 +52,15 @@ export function BgMusicProvider({ children }: { children: ReactNode }) {
     setBgMusicVolumeState(s.bgMusicVolume);
     setBgMusicEnabled(s.bgMusicEnabled);
     setSfxEnabled(s.sfxEnabled);
+    setSfxVolumeState(s.sfxVolume);
     setInitialized(true);
   }, []);
 
   // Persist to localStorage on change
   useEffect(() => {
     if (!initialized) return;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ bgMusicVolume, bgMusicEnabled, sfxEnabled }));
-  }, [bgMusicVolume, bgMusicEnabled, sfxEnabled, initialized]);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ bgMusicVolume, bgMusicEnabled, sfxEnabled, sfxVolume }));
+  }, [bgMusicVolume, bgMusicEnabled, sfxEnabled, sfxVolume, initialized]);
 
   // Sync audio volume/pause on state change
   useEffect(() => {
@@ -67,8 +74,14 @@ export function BgMusicProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     btnSoundRef.current = new Audio("/Button Press Device.mp3");
-    btnSoundRef.current.volume = 0.5;
+    btnSoundRef.current.volume = sfxVolume;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Sync sfx volume
+  useEffect(() => {
+    if (btnSoundRef.current) btnSoundRef.current.volume = sfxVolume;
+  }, [sfxVolume]);
 
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
@@ -112,10 +125,12 @@ export function BgMusicProvider({ children }: { children: ReactNode }) {
     });
   };
 
+  const setSfxVolume = (v: number) => setSfxVolumeState(v);
+
   const toggleSfx = () => setSfxEnabled((prev) => !prev);
 
   return (
-    <BgMusicContext.Provider value={{ play, bgMusicVolume, bgMusicEnabled, sfxEnabled, setBgMusicVolume, toggleBgMusic, toggleSfx }}>
+    <BgMusicContext.Provider value={{ play, bgMusicVolume, bgMusicEnabled, sfxEnabled, sfxVolume, setBgMusicVolume, setSfxVolume, toggleBgMusic, toggleSfx }}>
       <audio ref={audioRef} src="/Lost Signals.mp3" loop />
       {children}
     </BgMusicContext.Provider>

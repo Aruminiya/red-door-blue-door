@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, memo } from "react";
 import {
   Box,
   Button,
@@ -21,7 +21,7 @@ const shelterRooms = (allRooms as Door[]).filter((r) => r.type === "Shelter");
 const asuraRooms = (allRooms as Door[]).filter((r) => r.type === "Asura");
 const TOTAL_ROOMS = allRooms.length;
 
-function RoomTile({
+const RoomTile = memo(function RoomTile({
   room,
   unlocked,
   onClick,
@@ -75,6 +75,8 @@ function RoomTile({
             component="img"
             src={room.imageUrl}
             alt={room.name}
+            loading="lazy"
+            decoding="async"
             sx={{ width: "100%", height: "100%", objectFit: "cover" }}
           />
         ) : (
@@ -113,7 +115,7 @@ function RoomTile({
       </Box>
     </Tooltip>
   );
-}
+});
 
 function SectionGrid({
   rooms,
@@ -214,6 +216,8 @@ export default function SceneCollectionPage() {
     );
   }, [unlockedIds]);
 
+  const handleSelect = useCallback((room: Door) => setSelectedRoom(room), []);
+
   const unlockedCount = unlockedIds.size;
   const unlockedShelterCount = shelterRooms.filter((r) => unlockedIds.has(r.id)).length;
   const unlockedAsuraCount = asuraRooms.filter((r) => unlockedIds.has(r.id)).length;
@@ -274,7 +278,7 @@ export default function SceneCollectionPage() {
           <SectionGrid
             rooms={shelterRooms}
             unlockedIds={unlockedIds}
-            onSelect={setSelectedRoom}
+            onSelect={handleSelect}
             sectionRef={shelterRef as React.RefObject<HTMLDivElement>}
             label="避難所 Shelter"
             labelColor="#2ecc71"
@@ -285,7 +289,7 @@ export default function SceneCollectionPage() {
           <SectionGrid
             rooms={asuraRooms}
             unlockedIds={unlockedIds}
-            onSelect={setSelectedRoom}
+            onSelect={handleSelect}
             sectionRef={asuraRef as React.RefObject<HTMLDivElement>}
             label="修羅場 Asura"
             labelColor="#e74c3c"

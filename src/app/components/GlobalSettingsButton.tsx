@@ -41,7 +41,7 @@ export default function GlobalSettingsButton() {
       >
         <SettingsIcon />
       </Box>
-      <SettingsDialog open={open} onClose={() => setOpen(false)} />
+      <SettingsDialog open={open} onCloseAction={() => setOpen(false)} />
     </>
   );
 }

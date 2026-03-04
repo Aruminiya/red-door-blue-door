@@ -2,7 +2,6 @@
 
 import {
   Dialog,
-  DialogTitle,
   DialogContent,
   DialogActions,
   Button,
@@ -10,76 +9,116 @@ import {
   Box,
   Switch,
   Slider,
-  Stack,
-  Divider,
 } from "@mui/material";
 import { useBgMusic } from "@/app/contexts/BgMusicContext";
 
 type SettingsDialogProps = {
   open: boolean;
-  onClose: () => void;
+  onCloseAction: () => void;
 };
 
-const dialogPaperSx = {
-  backgroundColor: "rgba(10, 10, 20, 0.88)",
-  backdropFilter: "blur(16px)",
-  WebkitBackdropFilter: "blur(16px)",
-  border: "1px solid rgba(255,255,255,0.12)",
-  borderRadius: 1,
-  color: "white",
-  maxWidth: 400,
-  width: "100%",
+const palette = {
+  bg: "rgba(11,15,22,0.97)",
+  border: "rgba(255,255,255,0.1)",
+  text: "#eef1f7",
+  muted: "rgba(238,241,247,0.4)",
+  divider: "rgba(255,255,255,0.07)",
 };
 
-const rowSx = {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
+const switchSx = {
+  "& .MuiSwitch-switchBase.Mui-checked": { color: "#e8c96a" },
+  "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+    backgroundColor: "rgba(232,201,106,0.35)",
+  },
+  "& .MuiSwitch-track": { backgroundColor: "rgba(255,255,255,0.15)" },
 };
 
-const labelSx = {
-  color: "rgba(255,255,255,0.85)",
-  fontSize: "0.9rem",
-  letterSpacing: "0.06em",
-};
-
-export default function SettingsDialog({ open, onClose }: SettingsDialogProps) {
-  const { bgMusicVolume, bgMusicEnabled, sfxEnabled, setBgMusicVolume, toggleBgMusic, toggleSfx } =
+export default function SettingsDialog({ open, onCloseAction }: SettingsDialogProps) {
+  const { bgMusicVolume, bgMusicEnabled, sfxEnabled, sfxVolume, setBgMusicVolume, setSfxVolume, toggleBgMusic, toggleSfx } =
     useBgMusic();
 
   return (
     <Dialog
       open={open}
-      onClose={onClose}
-      PaperProps={{ sx: dialogPaperSx }}
-      slotProps={{ backdrop: { sx: { backgroundColor: "rgba(0,0,0,0.7)" } } }}
+      onClose={onCloseAction}
+      maxWidth="xs"
+      fullWidth
+      slotProps={{
+        paper: {
+          sx: {
+            backgroundColor: palette.bg,
+            backdropFilter: "blur(16px)",
+            WebkitBackdropFilter: "blur(16px)",
+            borderRadius: 2,
+            border: `1px solid ${palette.border}`,
+            borderTop: "3px solid rgba(232,201,106,0.6)",
+            color: palette.text,
+            overflow: "hidden",
+          },
+        },
+        backdrop: { sx: { backgroundColor: "rgba(0,0,0,0.6)" } },
+      }}
     >
-      <DialogTitle sx={{ color: "white", letterSpacing: "0.15em", fontSize: "1.1rem", pb: 1 }}>
-        設定
-      </DialogTitle>
+      {/* Header */}
+      <Box
+        sx={{
+          px: 2.5,
+          pt: 2.25,
+          pb: 2,
+          borderBottom: `1px solid ${palette.border}`,
+        }}
+      >
+        <Typography
+          sx={{
+            fontSize: "0.62rem",
+            color: palette.muted,
+            letterSpacing: "0.25em",
+            textTransform: "uppercase",
+            mb: 0.5,
+          }}
+        >
+          Preferences
+        </Typography>
+        <Typography
+          sx={{
+            fontWeight: 700,
+            fontSize: "1.15rem",
+            letterSpacing: "0.1em",
+            color: "#e8c96a",
+          }}
+        >
+          設定
+        </Typography>
+      </Box>
 
-      <DialogContent sx={{ display: "flex", flexDirection: "column", gap: 2.5, pt: 1 }}>
+      {/* Content */}
+      <DialogContent sx={{ p: 0 }}>
 
-        {/* Background music */}
-        <Box>
-          <Box sx={rowSx}>
-            <Typography sx={labelSx}>背景音樂</Typography>
-            <Switch
-              checked={bgMusicEnabled}
-              onChange={toggleBgMusic}
-              size="small"
-              sx={{
-                "& .MuiSwitch-switchBase.Mui-checked": { color: "rgba(255,255,255,0.9)" },
-                "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
-                  backgroundColor: "rgba(255,255,255,0.4)",
-                },
-                "& .MuiSwitch-track": { backgroundColor: "rgba(255,255,255,0.2)" },
-              }}
-            />
+        {/* BGM row */}
+        <Box sx={{ px: 2.5, pt: 2.25, pb: 2.25, borderBottom: `1px solid ${palette.divider}` }}>
+          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 1.5 }}>
+            <Box>
+              <Typography sx={{ color: palette.text, fontSize: "0.9rem", letterSpacing: "0.06em", fontWeight: 500 }}>
+                背景音樂
+              </Typography>
+              <Typography sx={{ color: palette.muted, fontSize: "0.72rem", letterSpacing: "0.08em", mt: 0.25 }}>
+                Background Music
+              </Typography>
+            </Box>
+            <Switch checked={bgMusicEnabled} onChange={toggleBgMusic} size="small" sx={switchSx} />
           </Box>
-          <Stack direction="row" alignItems="center" spacing={2} sx={{ mt: 1.5 }}>
-            <Typography sx={{ color: "rgba(255,255,255,0.35)", fontSize: "0.75rem", minWidth: 24 }}>
-              0%
+
+          {/* Volume slider */}
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+            <Typography
+              sx={{
+                color: bgMusicEnabled ? palette.muted : "rgba(255,255,255,0.18)",
+                fontSize: "0.7rem",
+                minWidth: 28,
+                transition: "color 0.2s",
+              }}
+            >
+              音量
             </Typography>
             <Slider
               disabled={!bgMusicEnabled}
@@ -88,44 +127,116 @@ export default function SettingsDialog({ open, onClose }: SettingsDialogProps) {
               min={0}
               max={100}
               sx={{
-                color: bgMusicEnabled ? "rgba(255,255,255,0.7)" : "rgba(255,255,255,0.2)",
-                "& .MuiSlider-thumb": { width: 14, height: 14 },
+                color: bgMusicEnabled ? "#e8c96a" : "rgba(255,255,255,0.15)",
+                transition: "color 0.2s",
+                "& .MuiSlider-thumb": {
+                  width: 12,
+                  height: 12,
+                  boxShadow: bgMusicEnabled ? "0 0 6px rgba(232,201,106,0.5)" : "none",
+                },
+                "& .MuiSlider-rail": { backgroundColor: "rgba(255,255,255,0.1)" },
               }}
             />
-            <Typography sx={{ color: "rgba(255,255,255,0.35)", fontSize: "0.75rem", minWidth: 32, textAlign: "right" }}>
+            <Typography
+              sx={{
+                color: bgMusicEnabled ? "rgba(232,201,106,0.8)" : "rgba(255,255,255,0.18)",
+                fontSize: "0.75rem",
+                fontWeight: 600,
+                minWidth: 36,
+                textAlign: "right",
+                letterSpacing: "0.04em",
+                transition: "color 0.2s",
+              }}
+            >
               {Math.round(bgMusicVolume * 100)}%
             </Typography>
-          </Stack>
+          </Box>
         </Box>
 
-        <Divider sx={{ borderColor: "rgba(255,255,255,0.08)" }} />
+        {/* SFX row */}
+        <Box sx={{ px: 2.5, pt: 2.25, pb: 2.25 }}>
+          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 1.5 }}>
+            <Box>
+              <Typography sx={{ color: palette.text, fontSize: "0.9rem", letterSpacing: "0.06em", fontWeight: 500 }}>
+                音效
+              </Typography>
+              <Typography sx={{ color: palette.muted, fontSize: "0.72rem", letterSpacing: "0.08em", mt: 0.25 }}>
+                Sound Effects
+              </Typography>
+            </Box>
+            <Switch checked={sfxEnabled} onChange={toggleSfx} size="small" sx={switchSx} />
+          </Box>
 
-        {/* SFX */}
-        <Box sx={rowSx}>
-          <Typography sx={labelSx}>音效</Typography>
-          <Switch
-            checked={sfxEnabled}
-            onChange={toggleSfx}
-            size="small"
-            sx={{
-              "& .MuiSwitch-switchBase.Mui-checked": { color: "rgba(255,255,255,0.9)" },
-              "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
-                backgroundColor: "rgba(255,255,255,0.4)",
-              },
-              "& .MuiSwitch-track": { backgroundColor: "rgba(255,255,255,0.2)" },
-            }}
-          />
+          {/* SFX Volume slider */}
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+            <Typography
+              sx={{
+                color: sfxEnabled ? palette.muted : "rgba(255,255,255,0.18)",
+                fontSize: "0.7rem",
+                minWidth: 28,
+                transition: "color 0.2s",
+              }}
+            >
+              音量
+            </Typography>
+            <Slider
+              disabled={!sfxEnabled}
+              value={Math.round(sfxVolume * 100)}
+              onChange={(_, v) => setSfxVolume((v as number) / 100)}
+              min={0}
+              max={100}
+              sx={{
+                color: sfxEnabled ? "#e8c96a" : "rgba(255,255,255,0.15)",
+                transition: "color 0.2s",
+                "& .MuiSlider-thumb": {
+                  width: 12,
+                  height: 12,
+                  boxShadow: sfxEnabled ? "0 0 6px rgba(232,201,106,0.5)" : "none",
+                },
+                "& .MuiSlider-rail": { backgroundColor: "rgba(255,255,255,0.1)" },
+              }}
+            />
+            <Typography
+              sx={{
+                color: sfxEnabled ? "rgba(232,201,106,0.8)" : "rgba(255,255,255,0.18)",
+                fontSize: "0.75rem",
+                fontWeight: 600,
+                minWidth: 36,
+                textAlign: "right",
+                letterSpacing: "0.04em",
+                transition: "color 0.2s",
+              }}
+            >
+              {Math.round(sfxVolume * 100)}%
+            </Typography>
+          </Box>
         </Box>
 
       </DialogContent>
 
-      <DialogActions sx={{ px: 3, pb: 2.5 }}>
+      {/* Footer */}
+      <DialogActions
+        sx={{
+          px: 2.5,
+          py: 2,
+          borderTop: `1px solid ${palette.border}`,
+        }}
+      >
         <Button
-          onClick={onClose}
+          fullWidth
+          onClick={onCloseAction}
           sx={{
-            color: "rgba(255,255,255,0.6)",
-            letterSpacing: "0.12em",
-            "&:hover": { color: "white" },
+            py: 1.2,
+            fontSize: "0.85rem",
+            letterSpacing: "0.18em",
+            borderRadius: 1.5,
+            color: "rgba(255,255,255,0.5)",
+            border: "1px solid rgba(255,255,255,0.12)",
+            "&:hover": {
+              borderColor: "rgba(255,255,255,0.35)",
+              backgroundColor: "rgba(255,255,255,0.05)",
+              color: "rgba(255,255,255,0.85)",
+            },
           }}
         >
           關閉
