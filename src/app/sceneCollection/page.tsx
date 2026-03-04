@@ -5,16 +5,13 @@ import {
   Box,
   Button,
   Container,
-  Dialog,
-  DialogContent,
-  IconButton,
   Stack,
   Tooltip,
   Typography,
 } from "@mui/material";
 import { useRouter } from "next/navigation";
 import gsap from "gsap";
-import DoorData from "@/app/components/DoorData";
+import DoorDataFullSceneDialog from "@/app/components/DoorDataFullSceneDialog";
 import allRooms from "@/room.json";
 import type { Door } from "@/app/types";
 
@@ -322,46 +319,11 @@ export default function SceneCollectionPage() {
       </Container>
 
       {/* Room detail dialog */}
-      <Dialog
+      <DoorDataFullSceneDialog
+        door={selectedRoom}
         open={selectedRoom !== null}
-        onClose={() => setSelectedRoom(null)}
-        maxWidth="xs"
-        fullWidth
-        slotProps={{
-          paper: {
-            sx: {
-              backgroundColor: "#0d1117",
-              border: "1px solid rgba(255,255,255,0.12)",
-              borderRadius: 2,
-            },
-          },
-        }}
-      >
-        <DialogContent sx={{ p: 0, position: "relative" }}>
-          <IconButton
-            onClick={() => setSelectedRoom(null)}
-            size="small"
-            sx={{
-              position: "absolute",
-              top: 8,
-              right: 8,
-              zIndex: 1,
-              color: "rgba(255,255,255,0.5)",
-              "&:hover": { color: "white" },
-            }}
-          >
-            ✕
-          </IconButton>
-          {selectedRoom && (
-            <DoorData
-              doorData={selectedRoom}
-              doorColor={selectedRoom.type === "Shelter" ? "blue" : "red"}
-              tone="dark"
-              isShowDoorColor={false}
-            />
-          )}
-        </DialogContent>
-      </Dialog>
+        onCloseAction={() => setSelectedRoom(null)}
+      />
     </Box>
   );
 }

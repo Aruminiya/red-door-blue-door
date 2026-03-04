@@ -312,7 +312,7 @@ const RoomRevealScreen = forwardRef<RoomRevealHandle, RoomRevealScreenProps>(
                 }}
               >
                 <Typography
-                  variant="h2"
+                  variant="h3"
                   sx={{
                     color: "#fff",
                     fontWeight: 700,

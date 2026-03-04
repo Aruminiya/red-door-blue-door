@@ -157,61 +157,64 @@ export default function IntroScreen({ onStartAction }: IntroScreenProps) {
           ))}
           {introComplete && (
             <>
-            <Stack
-              ref={introButtonRef}
-              direction="row"
-              sx={{ mt: 4, display: "flex", flexDirection: "column", alignItems: "center", gap: 1.5 }}
-            >
-              <Button
-                variant="outlined"
-                onClick={handleStartGame}
-                sx={{
-                  color: "white",
-                  borderColor: "rgba(255, 255, 255, 0.5)",
-                  letterSpacing: "0.15em",
-                  px: 4,
-                  "&:hover": {
-                    borderColor: "white",
-                    backgroundColor: "rgba(255, 255, 255, 0.1)",
-                  },
-                }}
+              <Stack
+                ref={introButtonRef}
+                direction="row"
+                  justifyContent="center"
+                sx={{ mt: 4, gap: 1.5 }}
               >
-                進入試煉
-              </Button>
-              <Button
-                variant="outlined"
-                onClick={() => router.push("/sceneCollection")}
-                sx={{
-                  color: "white",
-                  borderColor: "rgba(255, 255, 255, 0.5)",
-                  letterSpacing: "0.15em",
-                  px: 4,
-                  "&:hover": {
-                    borderColor: "white",
-                    backgroundColor: "rgba(255, 255, 255, 0.1)",
-                  },
-                }}
-              >
-                場景搜集
-              </Button>
-              <Button
-                variant="outlined"
-                onClick={() => setHowToPlayOpen(true)}
-                sx={{
-                  color: "white",
-                  borderColor: "rgba(255, 255, 255, 0.5)",
-                  letterSpacing: "0.15em",
-                  px: 4,
-                  "&:hover": {
-                    borderColor: "white",
-                    backgroundColor: "rgba(255, 255, 255, 0.1)",
-                  },
-                }}
-              >
-                遊戲說明
-              </Button>
-            </Stack>
-            <HowToPlayDialog open={howToPlayOpen} onClose={() => setHowToPlayOpen(false)} />
+                <Button
+                  variant="contained"
+                  onClick={handleStartGame}
+                  sx={{
+                    color: "black",
+                    borderColor: "rgb(255, 255, 255)",
+                    backgroundColor: "rgba(255, 255, 255)",
+                    letterSpacing: "0.15em",
+                    px: 4,
+                    "&:hover": {
+                      color: "white",
+                      borderColor: "white",
+                      backgroundColor: "rgba(186, 186, 186)",
+                    },
+                  }}
+                >
+                  進入試煉
+                </Button>
+                <Button
+                  variant="outlined"
+                  onClick={() => router.push("/sceneCollection")}
+                  sx={{
+                    color: "white",
+                    borderColor: "rgba(255, 255, 255, 0.5)",
+                    letterSpacing: "0.15em",
+                    px: 4,
+                    "&:hover": {
+                      borderColor: "white",
+                      backgroundColor: "rgba(255, 255, 255, 0.1)",
+                    },
+                  }}
+                >
+                  場景搜集
+                </Button>
+                <Button
+                  variant="outlined"
+                  onClick={() => setHowToPlayOpen(true)}
+                  sx={{
+                    color: "white",
+                    borderColor: "rgba(255, 255, 255, 0.5)",
+                    letterSpacing: "0.15em",
+                    px: 4,
+                    "&:hover": {
+                      borderColor: "white",
+                      backgroundColor: "rgba(255, 255, 255, 0.1)",
+                    },
+                  }}
+                >
+                  遊戲說明
+                </Button>
+                <HowToPlayDialog open={howToPlayOpen} onClose={() => setHowToPlayOpen(false)} />
+              </Stack>
             </>
           )}
         </Box>

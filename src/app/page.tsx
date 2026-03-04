@@ -137,6 +137,9 @@ export default function Home() {
             isGameOver={isGameOver}
             onNextRoundAction={handleNextRound}
             onFinishGameAction={finishGame}
+            heart={heart}
+            currentRound={round.length}
+            maxRounds={maxRounds}
           />
         </Box>
       )}

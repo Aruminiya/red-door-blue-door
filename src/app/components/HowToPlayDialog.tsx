@@ -21,7 +21,7 @@ const dialogPaperSx = {
   backdropFilter: "blur(16px)",
   WebkitBackdropFilter: "blur(16px)",
   border: "1px solid rgba(255,255,255,0.12)",
-  borderRadius: 3,
+  borderRadius: 1,
   color: "white",
   maxWidth: 480,
   width: "100%",

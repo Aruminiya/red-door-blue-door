@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import type { Door } from "@/app/types";
 import DoorData from "./DoorData";
+import FavoriteIcon from '@mui/icons-material/Favorite';
 
 type StoryDialogProps = {
   open: boolean;
@@ -27,6 +28,9 @@ type StoryDialogProps = {
   isGameOver: boolean;
   onNextRoundAction: () => void;
   onFinishGameAction: () => void;
+  heart: number;
+  currentRound: number;
+  maxRounds: number;
 };
 
 export default function StoryDialog({
@@ -41,6 +45,9 @@ export default function StoryDialog({
   isGameOver,
   onNextRoundAction,
   onFinishGameAction,
+  heart,
+  currentRound,
+  maxRounds,
 }: StoryDialogProps) {
   const currentDoor = currentChoice === "red" ? currentRedDoor : currentBlueDoor;
   const isShelter = currentDoor ? currentDoor.type === "Shelter" : true;
@@ -94,15 +101,14 @@ export default function StoryDialog({
         },
       }}
     >
-      <DialogTitle sx={{ pr: 6 }}>
+      <DialogTitle sx={{ pb: 1.5 }}>
         <Typography
           variant="h6"
-          component="span"
-          sx={{ 
+          component="div"
+          sx={{
             fontWeight: 600,
             color: palette.text,
-            display: "flex",
-            justifyContent: "center",
+            textAlign: "center",
           }}
         >
           {currentChoice === "red" ? "你選了 紅色門扉" : "你選了 藍色門扉"}
@@ -121,7 +127,25 @@ export default function StoryDialog({
               )}
             </Stack>
           )}
-
+          {/* Status row */}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              mb: 1.25,
+            }}
+          >
+            <Typography sx={{ fontSize: "0.8rem", color: palette.muted, letterSpacing: "0.08em", display: "flex", alignItems: "center", gap: 0.5 }}>
+              <FavoriteIcon sx={{ fontSize: "1rem", color: heart <= 3 ? "#e74c3c" : palette.text }} />
+              <Box component="span" sx={{ fontWeight: 700, color: heart <= 3 ? "#e74c3c" : palette.text }}>{heart}</Box>
+            </Typography>
+            <Typography sx={{ fontSize: "0.8rem", color: palette.muted, letterSpacing: "0.08em" }}>
+              第{" "}
+              <Box component="span" sx={{ fontWeight: 700, color: palette.text }}>{currentRound}</Box>
+              {" "}/ {maxRounds} 回合
+            </Typography>
+          </Box>
           {/* Loading */}
           {loading && (
             <Box sx={{ py: 2 }}>

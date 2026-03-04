@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Box } from "@mui/material";
 import SettingsDialog from "./SettingsDialog";
+import SettingsIcon from '@mui/icons-material/Settings';
 
 export default function GlobalSettingsButton() {
   const [open, setOpen] = useState(false);
@@ -38,7 +39,7 @@ export default function GlobalSettingsButton() {
           },
         }}
       >
-        ⚙
+        <SettingsIcon />
       </Box>
       <SettingsDialog open={open} onClose={() => setOpen(false)} />
     </>
