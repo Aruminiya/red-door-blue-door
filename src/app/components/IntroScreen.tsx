@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Box, Button, Typography, Stack } from "@mui/material";
 import { useRouter } from "next/navigation";
 import gsap from "gsap";
+import HowToPlayDialog from "./HowToPlayDialog";
 
 const INTRO_LINES = [
   "歡迎來到這場純白迴廊的試煉。我是你的引路人",
@@ -19,6 +20,7 @@ type IntroScreenProps = {
 export default function IntroScreen({ onStartAction }: IntroScreenProps) {
   const router = useRouter();
   const [introComplete, setIntroComplete] = useState(false);
+  const [howToPlayOpen, setHowToPlayOpen] = useState(false);
   const introContainerRef = useRef<HTMLDivElement>(null);
   const introButtonRef = useRef<HTMLDivElement>(null);
   const introContentRef = useRef<HTMLDivElement>(null);
@@ -154,6 +156,7 @@ export default function IntroScreen({ onStartAction }: IntroScreenProps) {
             </Typography>
           ))}
           {introComplete && (
+            <>
             <Stack
               ref={introButtonRef}
               direction="row"
@@ -191,7 +194,25 @@ export default function IntroScreen({ onStartAction }: IntroScreenProps) {
               >
                 場景搜集
               </Button>
+              <Button
+                variant="outlined"
+                onClick={() => setHowToPlayOpen(true)}
+                sx={{
+                  color: "white",
+                  borderColor: "rgba(255, 255, 255, 0.5)",
+                  letterSpacing: "0.15em",
+                  px: 4,
+                  "&:hover": {
+                    borderColor: "white",
+                    backgroundColor: "rgba(255, 255, 255, 0.1)",
+                  },
+                }}
+              >
+                遊戲說明
+              </Button>
             </Stack>
+            <HowToPlayDialog open={howToPlayOpen} onClose={() => setHowToPlayOpen(false)} />
+            </>
           )}
         </Box>
       </Box>

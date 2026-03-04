@@ -37,6 +37,7 @@ export default function ResultsPage() {
   const timelineRef = useRef<HTMLDivElement>(null);
   const detailsRef = useRef<HTMLDivElement>(null);
   const btnRef = useRef<HTMLButtonElement>(null);
+  const sceneBtnRef = useRef<HTMLButtonElement>(null);
 
   const totalRounds = round.length;
   const cleared = heart > 0 && totalRounds > 0;
@@ -44,7 +45,7 @@ export default function ResultsPage() {
   const blueCount = playerChoice.filter((c) => c === "blue").length;
 
   useEffect(() => {
-    const els = [heroRef.current, statsRef.current, timelineRef.current, detailsRef.current, btnRef.current].filter(Boolean);
+    const els = [heroRef.current, statsRef.current, timelineRef.current, detailsRef.current, btnRef.current, sceneBtnRef.current].filter(Boolean);
     gsap.fromTo(
       els,
       { opacity: 0, y: 24 },
@@ -301,6 +302,23 @@ export default function ResultsPage() {
             }}
           >
             再次踏入純白迴廊
+          </Button>
+
+          {/* ── Scene Collection Button ── */}
+          <Button
+            ref={sceneBtnRef}
+            variant="text"
+            fullWidth
+            onClick={() => router.push("/sceneCollection")}
+            sx={{
+              opacity: 0,
+              color: "rgba(255,255,255,0.45)",
+              letterSpacing: "0.15em",
+              fontSize: "0.85rem",
+              "&:hover": { color: "rgba(255,255,255,0.8)" },
+            }}
+          >
+            前往場景搜集
           </Button>
 
         </Stack>

@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
 import { GameProvider } from "./contexts/GameContext";
 import { BgMusicProvider } from "./contexts/BgMusicContext";
+import GlobalSettingsButton from "./components/GlobalSettingsButton";
 
 const theme = createTheme({
   palette: {
@@ -34,6 +35,7 @@ export default function Providers({
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <BgMusicProvider>
+        <GlobalSettingsButton />
         <GameProvider onFinish={() => router.push("/results")}>
           {children}
         </GameProvider>
