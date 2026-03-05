@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { Dialog, Box, Typography, IconButton } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
 import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
@@ -16,6 +17,12 @@ export default function DoorDataFullSceneDialog({
   open,
   onCloseAction,
 }: DoorDataFullSceneDialogProps) {
+  useEffect(() => {
+    if (open) {
+      new Audio("/Paper.mp3").play().catch(() => {});
+    }
+  }, [open]);
+
   if (!door) return null;
 
   const isShelter = door.type === "Shelter";

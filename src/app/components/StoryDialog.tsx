@@ -11,6 +11,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
+import { useEffect } from "react";
 import type { Door } from "@/app/types";
 import DoorData from "./DoorData";
 import FavoriteIcon from "@mui/icons-material/Favorite";
@@ -48,6 +49,12 @@ export default function StoryDialog({
   currentRound,
   maxRounds,
 }: StoryDialogProps) {
+  useEffect(() => {
+    if (open) {
+      new Audio("/Paper.mp3").play().catch(() => {});
+    }
+  }, [open]);
+
   const currentDoor = currentChoice === "red" ? currentRedDoor : currentBlueDoor;
   const isShelter = currentDoor ? currentDoor.type === "Shelter" : true;
   const tone = "dark";
@@ -68,6 +75,7 @@ export default function StoryDialog({
     if (isGameOver) {
       onFinishGameAction();
     } else {
+      new Audio("/DeepWhoosh.mp3").play().catch(() => {});
       onNextRoundAction();
       onCloseAction();
     }
