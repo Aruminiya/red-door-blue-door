@@ -51,6 +51,14 @@ export default function ResultsPage() {
   const blueCount = playerChoice.filter((c) => c === "blue").length;
 
   useEffect(() => {
+    if (totalRounds === 0) {
+      initGame();
+      router.push("/");
+    }
+  }, [totalRounds, initGame, router]);
+
+  useEffect(() => {
+    if (totalRounds === 0) return;
     const els = [
       heroRef.current,
       statsRef.current,
@@ -59,6 +67,7 @@ export default function ResultsPage() {
       btnRef.current,
       sceneBtnRef.current,
     ].filter(Boolean);
+    if (els.length === 0) return;
     gsap.fromTo(
       els,
       { opacity: 0, y: 28 },
@@ -410,7 +419,10 @@ export default function ResultsPage() {
             ref={sceneBtnRef}
             variant="text"
             fullWidth
-            onClick={() => router.push("/sceneCollection")}
+            onClick={() => {
+              initGame();
+              router.push("/sceneCollection"); 
+            }}
             sx={{
               opacity: 0,
               color: "rgba(255,255,255,0.3)",
