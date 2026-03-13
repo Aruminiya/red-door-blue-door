@@ -8,14 +8,14 @@ import IntroScreen from "./components/IntroScreen";
 import RoomRevealScreen, { type RoomRevealHandle } from "./components/RoomRevealScreen";
 import StoryDialog from "./components/StoryDialog";
 import { useGame } from "./contexts/GameContext";
-import { useBgMusic } from "./contexts/BgMusicContext";
+import { useAppSettings } from "./contexts/AppSettingsContext";
 import { useStoryGenerator } from "./hooks/useStoryGenerator";
 import { useToggle } from "./hooks/useToggle";
 
 export default function Home() {
   const [showIntro, setShowIntro] = useState(true);
 
-  const { play: playBgMusic } = useBgMusic();
+  const { play: playBgMusic, aiStoryEnabled } = useAppSettings();
   const roomRevealRef = useRef<RoomRevealHandle>(null);
 
   const {
@@ -41,6 +41,7 @@ export default function Home() {
     roundCount: round.length,
     heart,
     maxRounds,
+    aiStoryEnabled,
   });
 
   const handleNextRound = () => {

@@ -84,9 +84,9 @@ export default function StoryDialog({
   return (
     <Dialog
       open={open}
-      onClose={onCloseAction}
       maxWidth="sm"
       fullWidth
+      disableEscapeKeyDown
       slotProps={{
         paper: {
           sx: {

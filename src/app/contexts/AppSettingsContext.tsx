@@ -9,9 +9,10 @@ type Settings = {
   bgMusicEnabled: boolean;
   sfxEnabled: boolean;
   sfxVolume: number;
+  aiStoryEnabled: boolean;
 };
 
-const DEFAULT_SETTINGS: Settings = { bgMusicVolume: 0.2, bgMusicEnabled: true, sfxEnabled: true, sfxVolume: 0.5 };
+const DEFAULT_SETTINGS: Settings = { bgMusicVolume: 0.2, bgMusicEnabled: true, sfxEnabled: true, sfxVolume: 0.5, aiStoryEnabled: true };
 
 function loadSettings(): Settings {
   if (typeof window === "undefined") return DEFAULT_SETTINGS;
@@ -22,21 +23,23 @@ function loadSettings(): Settings {
   return DEFAULT_SETTINGS;
 }
 
-type BgMusicContextValue = {
+type AppSettingsContextValue = {
   play: () => void;
   bgMusicVolume: number;
   bgMusicEnabled: boolean;
   sfxEnabled: boolean;
   sfxVolume: number;
+  aiStoryEnabled: boolean;
   setBgMusicVolume: (v: number) => void;
   setSfxVolume: (v: number) => void;
   toggleBgMusic: () => void;
   toggleSfx: () => void;
+  toggleAiStory: () => void;
 };
 
-const BgMusicContext = createContext<BgMusicContextValue | null>(null);
+const AppSettingsContext = createContext<AppSettingsContextValue | null>(null);
 
-export function BgMusicProvider({ children }: { children: ReactNode }) {
+export function AppSettingsProvider({ children }: { children: ReactNode }) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const btnSoundRef = useRef<HTMLAudioElement | null>(null);
 
@@ -44,6 +47,7 @@ export function BgMusicProvider({ children }: { children: ReactNode }) {
   const [bgMusicEnabled, setBgMusicEnabled] = useState<boolean>(true);
   const [sfxEnabled, setSfxEnabled] = useState<boolean>(true);
   const [sfxVolume, setSfxVolumeState] = useState<number>(0.5);
+  const [aiStoryEnabled, setAiStoryEnabled] = useState<boolean>(true);
   const [initialized, setInitialized] = useState(false);
 
   // Load from localStorage on mount
@@ -53,14 +57,15 @@ export function BgMusicProvider({ children }: { children: ReactNode }) {
     setBgMusicEnabled(s.bgMusicEnabled);
     setSfxEnabled(s.sfxEnabled);
     setSfxVolumeState(s.sfxVolume);
+    setAiStoryEnabled(s.aiStoryEnabled);
     setInitialized(true);
   }, []);
 
   // Persist to localStorage on change
   useEffect(() => {
     if (!initialized) return;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ bgMusicVolume, bgMusicEnabled, sfxEnabled, sfxVolume }));
-  }, [bgMusicVolume, bgMusicEnabled, sfxEnabled, sfxVolume, initialized]);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ bgMusicVolume, bgMusicEnabled, sfxEnabled, sfxVolume, aiStoryEnabled }));
+  }, [bgMusicVolume, bgMusicEnabled, sfxEnabled, sfxVolume, aiStoryEnabled, initialized]);
 
   // Sync audio volume/pause on state change
   useEffect(() => {
@@ -129,16 +134,18 @@ export function BgMusicProvider({ children }: { children: ReactNode }) {
 
   const toggleSfx = () => setSfxEnabled((prev) => !prev);
 
+  const toggleAiStory = () => setAiStoryEnabled((prev) => !prev);
+
   return (
-    <BgMusicContext.Provider value={{ play, bgMusicVolume, bgMusicEnabled, sfxEnabled, sfxVolume, setBgMusicVolume, setSfxVolume, toggleBgMusic, toggleSfx }}>
+    <AppSettingsContext.Provider value={{ play, bgMusicVolume, bgMusicEnabled, sfxEnabled, sfxVolume, aiStoryEnabled, setBgMusicVolume, setSfxVolume, toggleBgMusic, toggleSfx, toggleAiStory }}>
       <audio ref={audioRef} src="/Lost Signals.mp3" loop />
       {children}
-    </BgMusicContext.Provider>
+    </AppSettingsContext.Provider>
   );
 }
 
-export function useBgMusic(): BgMusicContextValue {
-  const context = useContext(BgMusicContext);
-  if (!context) throw new Error("useBgMusic must be used within a BgMusicProvider");
+export function useAppSettings(): AppSettingsContextValue {
+  const context = useContext(AppSettingsContext);
+  if (!context) throw new Error("useAppSettings must be used within an AppSettingsProvider");
   return context;
 }

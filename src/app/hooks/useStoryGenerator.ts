@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import type { Round } from "@/app/types";
 import { useGemini } from "./useGemini";
 
@@ -9,6 +9,7 @@ type UseStoryGeneratorOptions = {
   roundCount: number;
   heart: number;
   maxRounds: number;
+  aiStoryEnabled: boolean;
 };
 
 type UseStoryGeneratorReturn = {
@@ -25,8 +26,10 @@ export function useStoryGenerator({
   roundCount,
   heart,
   maxRounds,
+  aiStoryEnabled,
 }: UseStoryGeneratorOptions): UseStoryGeneratorReturn {
-  const { loading, error, output, submit, clearOutput } = useGemini();
+  const { loading, error, output: aiOutput, submit, clearOutput: clearAiOutput } = useGemini();
+  const [staticOutput, setStaticOutput] = useState("");
 
   // 監控玩家選擇門的情況，自動生成故事
   useEffect(() => {
@@ -34,8 +37,13 @@ export function useStoryGenerator({
     if (playerChoiceCount !== roundCount) return;
 
     const chosenDoor = currentChoice === "red" ? currentRound.redDoor : currentRound.blueDoor;
-    const roundNum = playerChoiceCount;
 
+    if (!aiStoryEnabled) {
+      setStaticOutput(chosenDoor.story_desc ?? "");
+      return;
+    }
+
+    const roundNum = playerChoiceCount;
     const prompt = `
       我進入了第 ${roundNum} 間房間 幫我說故事
       【房間屬性】：${chosenDoor.type === "Shelter" ? "庇護所" : "修羅場"}
@@ -52,12 +60,17 @@ export function useStoryGenerator({
       - 如果玩家進入到 第 ${maxRounds} 房間 並且 沒有死亡 代表玩家成功通關
       `;
     submit(prompt);
-  }, [playerChoiceCount, roundCount, currentRound, currentChoice, heart, maxRounds, submit]);
+  }, [playerChoiceCount, roundCount, currentRound, currentChoice, heart, maxRounds, aiStoryEnabled, submit]);
+
+  const clearOutput = () => {
+    clearAiOutput();
+    setStaticOutput("");
+  };
 
   return {
-    loading,
-    error,
-    output,
+    loading: aiStoryEnabled ? loading : false,
+    error: aiStoryEnabled ? error : null,
+    output: aiStoryEnabled ? aiOutput : staticOutput,
     clearOutput,
   };
 }

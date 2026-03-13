@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
 import { GameProvider } from "./contexts/GameContext";
-import { BgMusicProvider } from "./contexts/BgMusicContext";
+import { AppSettingsProvider } from "./contexts/AppSettingsContext";
 import GlobalSettingsButton from "./components/GlobalSettingsButton";
 
 const theme = createTheme({
@@ -34,12 +34,12 @@ export default function Providers({
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <BgMusicProvider>
+      <AppSettingsProvider>
         <GlobalSettingsButton />
         <GameProvider onFinish={() => router.push("/results")}>
           {children}
         </GameProvider>
-      </BgMusicProvider>
+      </AppSettingsProvider>
     </ThemeProvider>
   );
 }

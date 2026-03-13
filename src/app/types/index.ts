@@ -8,7 +8,8 @@ export type Door = {
   env_features: string, 
   hp_change: number, 
   resource_desc: string | null,
-  threat_desc: string | null
+  threat_desc: string | null,
+  story_desc: string | null
 };
 
 export type Round = {

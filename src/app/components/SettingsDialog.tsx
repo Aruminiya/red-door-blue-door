@@ -10,7 +10,7 @@ import {
   Switch,
   Slider,
 } from "@mui/material";
-import { useBgMusic } from "@/app/contexts/BgMusicContext";
+import { useAppSettings } from "@/app/contexts/AppSettingsContext";
 
 type SettingsDialogProps = {
   open: boolean;
@@ -34,8 +34,8 @@ const switchSx = {
 };
 
 export default function SettingsDialog({ open, onCloseAction }: SettingsDialogProps) {
-  const { bgMusicVolume, bgMusicEnabled, sfxEnabled, sfxVolume, setBgMusicVolume, setSfxVolume, toggleBgMusic, toggleSfx } =
-    useBgMusic();
+  const { bgMusicVolume, bgMusicEnabled, sfxEnabled, sfxVolume, aiStoryEnabled, setBgMusicVolume, setSfxVolume, toggleBgMusic, toggleSfx, toggleAiStory } =
+    useAppSettings();
 
   return (
     <Dialog
@@ -154,7 +154,7 @@ export default function SettingsDialog({ open, onCloseAction }: SettingsDialogPr
         </Box>
 
         {/* SFX row */}
-        <Box sx={{ px: 2.5, pt: 2.25, pb: 2.25 }}>
+        <Box sx={{ px: 2.5, pt: 2.25, pb: 2.25, borderBottom: `1px solid ${palette.divider}` }}>
           <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 1.5 }}>
             <Box>
               <Typography sx={{ color: palette.text, fontSize: "0.9rem", letterSpacing: "0.06em", fontWeight: 500 }}>
@@ -209,6 +209,24 @@ export default function SettingsDialog({ open, onCloseAction }: SettingsDialogPr
             >
               {Math.round(sfxVolume * 100)}%
             </Typography>
+          </Box>
+        </Box>
+
+        {/* AI Story row */}
+        <Box sx={{ px: 2.5, pt: 2.25, pb: 2.25 }}>
+          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <Box>
+              <Typography sx={{ color: palette.text, fontSize: "0.9rem", letterSpacing: "0.06em", fontWeight: 500 }}>
+                AI 故事敘述
+              </Typography>
+              <Typography sx={{ color: palette.muted, fontSize: "0.72rem", letterSpacing: "0.08em", mt: 0.25 }}>
+                AI Story Narration
+              </Typography>
+              <Typography sx={{ color: palette.muted, fontSize: "0.65rem", letterSpacing: "0.04em", mt: 0.5, maxWidth: 200, lineHeight: 1.4 }}>
+                {aiStoryEnabled ? "由 Gemini 即時生成故事" : "使用預設故事描述"}
+              </Typography>
+            </Box>
+            <Switch checked={aiStoryEnabled} onChange={toggleAiStory} size="small" sx={switchSx} />
           </Box>
         </Box>
 
