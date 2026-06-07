@@ -43,7 +43,6 @@ export default function ResultsPage() {
   const timelineRef = useRef<HTMLDivElement>(null);
   const detailsRef = useRef<HTMLDivElement>(null);
   const btnRef = useRef<HTMLButtonElement>(null);
-  const sceneBtnRef = useRef<HTMLButtonElement>(null);
 
   const totalRounds = round.length;
   const cleared = heart > 0 && totalRounds > 0;
@@ -65,7 +64,6 @@ export default function ResultsPage() {
       timelineRef.current,
       detailsRef.current,
       btnRef.current,
-      sceneBtnRef.current,
     ].filter(Boolean);
     if (els.length === 0) return;
     gsap.fromTo(
@@ -413,26 +411,6 @@ export default function ResultsPage() {
             }}
           >
             再次踏入純白迴廊
-          </Button>
-
-          <Button
-            ref={sceneBtnRef}
-            variant="text"
-            fullWidth
-            onClick={() => {
-              initGame();
-              router.push("/sceneCollection"); 
-            }}
-            sx={{
-              opacity: 0,
-              color: "rgba(255,255,255,0.3)",
-              letterSpacing: "0.15em",
-              fontSize: "0.8rem",
-              mt: -2,
-              "&:hover": { color: "rgba(255,255,255,0.65)" },
-            }}
-          >
-            前往場景搜集
           </Button>
 
         </Stack>
