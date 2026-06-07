@@ -78,7 +78,7 @@ export default function Home() {
         }
       }
 
-      roomRevealRef.current?.show(chosenDoor?.imageUrl ?? null, chosenDoor?.name, chosenDoor?.type, isNewRoom);
+      roomRevealRef.current?.show(chosenDoor?.imageUrlFull ?? null, chosenDoor?.name, chosenDoor?.type, isNewRoom);
     } else {
       console.warn(`無法選擇門扉: ${result.reason}`);
     }
@@ -93,7 +93,7 @@ export default function Home() {
   // 回合分配後立即預先載入兩張房間圖像，
   // 這樣瀏覽器在玩家點擊前就能快取它們。
   useEffect(() => {
-    [currentRedDoor?.imageUrl, currentBlueDoor?.imageUrl].forEach((url) => {
+    [currentRedDoor?.imageUrlFull, currentBlueDoor?.imageUrlFull].forEach((url) => {
       if (!url) return;
       const img = new Image();
       img.src = url;

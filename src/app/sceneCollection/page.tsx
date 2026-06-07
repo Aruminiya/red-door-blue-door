@@ -134,6 +134,7 @@ function SectionGrid({
   labelColor: string;
   unlockedCount: number;
 }) {
+
   return (
     <Box ref={sectionRef} sx={{ opacity: 0 }}>
       <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 1.5 }}>

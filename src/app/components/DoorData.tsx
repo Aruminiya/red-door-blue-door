@@ -18,7 +18,7 @@ export default function DoorData({ doorData, doorColor, isShowDoorColor = true }
   const isShelter = doorData.type === "Shelter";
   const accent = isShelter ? "#2ecc71" : "#e74c3c";
   const typeLabel = isShelter ? "避難所 · Shelter" : "修羅場 · Asura";
-  const imageSrc = doorData.imageUrl || "/DefaultImage.png";
+  const imageSrc = doorData.imageUrlFull || doorData.imageUrl || "/DefaultImage.png";
   const doorChoiceColor = doorColor === "red" ? "#e74c3c" : "#3498db";
   const doorChoiceLabel = doorColor === "red" ? "紅門扉" : "藍門扉";
 

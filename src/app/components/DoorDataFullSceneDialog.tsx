@@ -28,7 +28,7 @@ export default function DoorDataFullSceneDialog({
   const isShelter = door.type === "Shelter";
   const accentColor = isShelter ? "#2ecc71" : "#e74c3c";
   const typeLabel = isShelter ? "避難所 · Shelter" : "修羅場 · Asura";
-  const imageSrc = door.imageUrl ?? "/DefaultImage.png";
+  const imageSrc = door.imageUrlFull ?? door.imageUrl ?? "/DefaultImage.png";
 
   const handleDownload = async () => {
     try {
